@@ -1,0 +1,12 @@
+image: python:3.4
+
+stages:
+        - test
+
+unittests:
+        tags:
+                - docker
+        stage: test
+        script: pytest-3
+
+
