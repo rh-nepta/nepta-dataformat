@@ -4,21 +4,22 @@ from xml.dom import minidom
 
 from dataformat.section import Section
 from dataformat.exceptions import DataFormatFileNotFound
+from dataformat.decorators import readonly_check
 
 
 class XMLFile(object):
 
-    def __init__(self, path, root_section=None, overwrite=False):
+    def __init__(self, path, root_section=None, readonly=False):
         self.path = path
-        self.root = Section('root') if not root_section else root_section
-        self.overwrite = overwrite
+        self._root = Section('root') if not root_section else root_section
+        self.readonly = readonly
 
     @classmethod
-    def open(cls, path):
+    def open(cls, path, readonly=False):
         if not os.path.exists(path) and not os.path.isfile(path):
             raise DataFormatFileNotFound('File %s does not exists' % path)
 
-        return cls(path, cls._load(path))
+        return cls(path, cls._load(path), readonly=readonly)
 
     @classmethod
     def create(cls, path):
@@ -28,6 +29,16 @@ class XMLFile(object):
         open(path, 'w').close()
         return cls(path)
 
+    @property
+    def root(self):
+        return self._root
+
+    @root.setter
+    @readonly_check
+    def root(self, value):
+        self._root = value
+
+    @readonly_check
     def save(self):
         self._save(self.path, self.root)
 
