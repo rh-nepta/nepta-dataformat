@@ -4,3 +4,7 @@ class BaseDataFormatException(Exception):
 
 class DataFormatFileNotFound(BaseDataFormatException):
     pass
+
+
+class DataFormatReadOnlyException(BaseDataFormatException):
+    pass
