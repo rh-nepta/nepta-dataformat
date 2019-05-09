@@ -4,7 +4,7 @@ import os
 from dataformat.package import DataPackage
 from dataformat.section import Section, SectionCollection
 from dataformat.xml_file import XMLFile, MetaXMLFile
-from dataformat.exceptions import DataFormatFileNotFound
+from dataformat.exceptions import DataFormatFileNotFound, DataFormatReadOnlyException
 from unittest import TestCase
 
 
@@ -100,12 +100,13 @@ class XMLFileTest(TestCase):
         self.assertEqual(data_sec.get_subsections_by_param_val(number="15.x")[0].name, "test_temp")
 
     def test_exceptions(self):
-        try:
-            xml1 = XMLFile.open('asdfasdf')
-        except DataFormatFileNotFound as d:
-            pass
-        else:
-            raise AssertionError
+        self.assertRaises(DataFormatFileNotFound, XMLFile.open, 'asdfasdf')
+
+    def test_readonly(self):
+        ro_xml = XMLFile.open(self.EXIST, readonly=True)
+
+        self.assertRaises(DataFormatReadOnlyException, setattr, ro_xml, 'root', Section('ASDF'))
+        self.assertRaises(DataFormatReadOnlyException, XMLFile.save, ro_xml)
 
 
 class MetaXMLFileTest(TestCase):
