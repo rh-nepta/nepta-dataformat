@@ -3,6 +3,9 @@ image: python:3.4
 stages:
         - test
 
+before_script:
+        - dnf -y install python3-pytest 
+
 unittests:
         tags:
                 - docker
