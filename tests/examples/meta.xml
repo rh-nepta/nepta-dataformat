@@ -1,0 +1,29 @@
+<?xml version="1.0" ?>
+  <BeakerRunResult>
+    <Settings>
+      <DateTime value="2018-04-18 18:23:39"/>
+      <UUID value="666f97a3-314b-4ffe-8331-9c2ac712d868"/>
+      <Family value="RHEL7"/>
+      <Workflow value="manual"/>
+      <SpecificTag value="Testing jobcreator"/>
+      <BeakerHUB value="https://abc.com"/>
+      <TestCase value="Test"/>
+      <Kernel value="kernel-3.10.0"/>
+      <Area value="net"/>
+      <BenchmarkName value="iperf3"/>
+      <BenchmarkVersion value="3.5-1.el7eng.x86_64"/>
+      <Arguments value="--prepare --execute --sync perfqe --submit --store --store-logs --configuration Standard --meta Family 'RHEL7' --meta Workflow 'manual' --meta SpecificTag 'Testing jobcreator' "/>
+      <HostName value="struska1.com"/>
+      <OtherHostNames type="list">
+        <value value="struska1.com"/>
+        <value value="struska2.com"/>
+      </OtherHostNames>
+      <SELinux value="Enforcing"/>
+      <InRHTS value="True"/>
+      <Distribution value="RHEL-7.2"/>
+      <BeakerJobID value="3483869"/>
+      <TunedProfile value="throughput-performance"/>
+      <Architecture value="x86_64"/>
+      <NetworkPerftestVersion value="14.1-24.noarch"/>
+    </Settings>
+  </BeakerRunResult>

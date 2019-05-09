@@ -4,20 +4,24 @@ from unittest import TestCase
 
 from dataformat.package import DataPackage
 from dataformat.xml_file import XMLFile
-from .xml_file_test import XMLFileTest, MetaXMLFileTest
 
 
 class BasicPackageTests(TestCase):
-    CREATE_PATH = '/tmp/tests/p1'
-    OPEN_PATH = '/tmp/tests/p2'
+    EXAMPLE_DIR = os.path.join(
+        os.path.dirname(os.path.realpath(__file__)), 'examples'
+    )
+    TEST_DIR = 'tmp'
+    CREATE_PATH = os.path.join(TEST_DIR, 'p1')
+    OPEN_PATH = os.path.join(TEST_DIR, 'p2')
 
     @classmethod
     def setUpClass(cls):
+        os.mkdir(cls.TEST_DIR)
         os.mkdir(cls.OPEN_PATH)
-        with open(os.path.join(cls.OPEN_PATH, 'meta.xml'), 'w') as f:
-            f.write(MetaXMLFileTest.EXAMPLE)
-        with open(os.path.join(cls.OPEN_PATH, 'store.xml'), 'w') as f:
-            f.write(XMLFileTest.EXAMPLE)
+        shutil.copy(os.path.join(cls.EXAMPLE_DIR, 'meta.xml'),
+                    os.path.join(cls.OPEN_PATH, 'meta.xml'))
+        shutil.copy(os.path.join(cls.EXAMPLE_DIR, 'menu.xml'),
+                    os.path.join(cls.OPEN_PATH, 'store.xml'))
 
     def test_create(self):
         p = DataPackage.create(self.CREATE_PATH)
@@ -39,9 +43,6 @@ class BasicPackageTests(TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        if os.path.exists(cls.CREATE_PATH):
-            shutil.rmtree(cls.CREATE_PATH)
-        if os.path.exists(cls.OPEN_PATH):
-            shutil.rmtree(cls.OPEN_PATH)
+        shutil.rmtree(cls.TEST_DIR)
 
 

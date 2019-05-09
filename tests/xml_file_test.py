@@ -9,54 +9,27 @@ from unittest import TestCase
 
 
 class XMLFileTest(TestCase):
-    NEW = '/tmp/tests/xml1.xml'
-    EXIST = '/tmp/tests/xml2.xml'
-    EXAMPLE = """<?xml version="1.0" encoding="UTF-8"?>
-<breakfast_menu>
-  <food>
-    <name>Belgian Waffles</name>
-    <price>$5.95</price>
-    <description>Two of our famous Belgian Waffles with plenty of real maple syrup</description>
-    <calories>650</calories>
-  </food>
-  <food>
-    <name>Strawberry Belgian Waffles</name>
-    <price>$7.95</price>
-    <description>Light Belgian waffles covered with strawberries and whipped cream</description>
-    <calories>900</calories>
-  </food>
-  <food>
-    <name>Berry-Berry Belgian Waffles</name>
-    <price>$8.95</price>
-    <description>Light Belgian waffles covered with an assortment of fresh berries and whipped cream</description>
-    <calories>900</calories>
-  </food>
-  <food>
-    <name>French Toast</name>
-    <price>$4.50</price>
-    <description>Thick slices made from our homemade sourdough bread</description>
-    <calories>600</calories>
-  </food>
-  <food>
-    <name>Homestyle Breakfast</name>
-    <price>$6.95</price>
-    <description>Two eggs, bacon or sausage, toast, and our ever-popular hash browns</description>
-    <calories>950</calories>
-  </food>
-</breakfast_menu>
-"""
+    EXAMPLE_DIR = os.path.join(
+        os.path.dirname(os.path.realpath(__file__)), 'examples'
+    )
+    TEST_DIR = 'tmp'
+    NEW = os.path.join(TEST_DIR, 's1.xml')
+    EXIST = os.path.join(TEST_DIR, 's2.xml')
+
+    @classmethod
+    def setUpClass(cls):
+        os.mkdir(cls.TEST_DIR)
+
     @classmethod
     def setUp(cls):
-        with open(cls.EXIST, 'w') as f:
-            f.write(cls.EXAMPLE)
+        shutil.copy(
+            os.path.join(cls.EXAMPLE_DIR, 'menu.xml'),
+            cls.EXIST
+        )
 
     @classmethod
     def tearDownClass(cls) -> None:
-        if os.path.exists(cls.EXIST):
-            os.remove(cls.EXIST)
-
-        if os.path.exists(cls.NEW):
-            os.remove(cls.NEW)
+        shutil.rmtree(cls.TEST_DIR)
 
     def test_open(self):
         xml = XMLFile.open(self.EXIST)
@@ -136,50 +109,27 @@ class XMLFileTest(TestCase):
 
 
 class MetaXMLFileTest(TestCase):
-    NEW = '/tmp/tests/meta1.xml'
-    EXIST = '/tmp/tests/meta2.xml'
-    EXAMPLE = """<?xml version="1.0" ?>
-  <BeakerRunResult>
-    <Settings>
-      <DateTime value="2018-04-18 18:23:39"/>
-      <UUID value="666f97a3-314b-4ffe-8331-9c2ac712d868"/>
-      <Family value="RHEL7"/>
-      <Workflow value="manual"/>
-      <SpecificTag value="Testing jobcreator"/>
-      <BeakerHUB value="https://abc.com"/>
-      <TestCase value="Test"/>
-      <Kernel value="kernel-3.10.0"/>
-      <Area value="net"/>
-      <BenchmarkName value="iperf3"/>
-      <BenchmarkVersion value="3.5-1.el7eng.x86_64"/>
-      <Arguments value="--prepare --execute --sync perfqe --submit --store --store-logs --configuration Standard --meta Family 'RHEL7' --meta Workflow 'manual' --meta SpecificTag 'Testing jobcreator' "/>
-      <HostName value="struska1.com"/>
-      <OtherHostNames type="list">
-        <value value="struska1.com"/>
-        <value value="struska2.com"/>
-      </OtherHostNames>
-      <SELinux value="Enforcing"/>
-      <InRHTS value="True"/>
-      <Distribution value="RHEL-7.2"/>
-      <BeakerJobID value="3483869"/>
-      <TunedProfile value="throughput-performance"/>
-      <Architecture value="x86_64"/>
-      <NetworkPerftestVersion value="14.1-24.noarch"/>
-    </Settings>
-  </BeakerRunResult>"""
+    EXAMPLE_DIR = os.path.join(
+        os.path.dirname(os.path.realpath(__file__)), 'examples'
+    )
+    TEST_DIR = 'tmp'
+    NEW = os.path.join(TEST_DIR, 'meta1.xml')
+    EXIST = os.path.join(TEST_DIR, 'meta2.xml')
+
+    @classmethod
+    def setUpClass(cls):
+        os.mkdir(cls.TEST_DIR)
 
     @classmethod
     def setUp(cls):
-        with open(cls.EXIST, 'w') as f:
-            f.write(cls.EXAMPLE)
+        shutil.copy(
+            os.path.join(cls.EXAMPLE_DIR, 'meta.xml'),
+            cls.EXIST
+        )
 
     @classmethod
-    def tearDownClass(cls) -> None:
-        if os.path.exists(cls.EXIST):
-            os.remove(cls.EXIST)
-
-        if os.path.exists(cls.NEW):
-            os.remove(cls.NEW)
+    def tearDownClass(cls):
+        shutil.rmtree(cls.TEST_DIR)
 
     def test_create_new(self):
         test1 = "wertyuiohgfdsfgblaekduf87"
