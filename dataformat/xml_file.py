@@ -86,10 +86,10 @@ class XMLFile(object):
 class MetaXMLFile(object):
 
     @classmethod
-    def open(cls, path):
+    def open(cls, path, readonly=False):
         file = XMLFile.open(path)
         meta_sec = file.root.get_subsections_by_name('Settings')[0]
-        return cls(file, meta_sec)
+        return cls(file, meta_sec, readonly)
 
     @classmethod
     def create(cls, path):
@@ -100,22 +100,25 @@ class MetaXMLFile(object):
         file.save()
         return cls(file, meta_sec)
 
-    def __init__(self, xml_file, meta_section):
+    def __init__(self, xml_file, meta_section, readonly=False):
         self._xml_file = xml_file
         self._meta_section_ptr = meta_section
         self._val_dict = {}
+        self.readonly = readonly
         for sec in meta_section:
             if 'value' in sec.params:
                 self._val_dict[sec.name] = sec.params['value']
             elif 'type' in sec.params and sec.params['type'] == 'list':
                 self._val_dict[sec.name] = [sec.params['value'] for sec in sec.subsections]
 
+    @readonly_check
     def save(self):
         self._meta_section_ptr.delete_subsections()
         for k, v in self._val_dict.items():
             self._meta_section_ptr.add_subsection(Section(k, value=v))
         self._xml_file.save()
 
+    @readonly_check
     def __setitem__(self, key, value):
         self._val_dict[key] = value
 
@@ -126,4 +129,5 @@ class MetaXMLFile(object):
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.save()
+        if not self.readonly:
+            self.save()

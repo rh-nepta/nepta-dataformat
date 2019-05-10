@@ -181,3 +181,11 @@ class MetaXMLFileTest(TestCase):
             self.assertEqual(m2['Family'], 'RHEL7')
             self.assertEqual(m2['Area'], area)
             self.assertEqual(m2['BeakerJobID'], '3483869')
+
+    def test_readonly(self):
+
+        with MetaXMLFile.open(self.EXIST, readonly=True) as m1:
+            self.assertRaises(DataFormatReadOnlyException, MetaXMLFile.save, m1)
+            self.assertRaises(DataFormatReadOnlyException, MetaXMLFile.__setitem__, m1, 'asdf', 'asdf')
+
+
