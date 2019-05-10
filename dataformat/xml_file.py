@@ -1,4 +1,5 @@
 import os
+from collections import OrderedDict
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
 
@@ -46,13 +47,14 @@ class XMLFile(object):
         # Recursively load all child nodes (and its params)
         # and interpret them as sections
         def load_sections(root_node):
-            params_list = dict()
-            for index, val in root_node.attrib.items():
-                params_list[index] = val
-            sec = Section(root_node.tag, **params_list)
+            # TODO think about frozen dict
+            params_list = OrderedDict(root_node.attrib.items())
+            sec = Section(root_node.tag, params_list)
             for child_node in root_node:
                 chld_sec = load_sections(child_node)
                 sec.subsections.append(chld_sec)
+            if self.readonly:
+                sec.subsections.sections = tuple(sec.subsections.sections)
             sec.subsections.readonly = self.readonly
             return sec
 
