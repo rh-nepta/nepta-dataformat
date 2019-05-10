@@ -46,6 +46,19 @@ class XMLFileTest(TestCase):
         for sec in xml.root:
             self.assertEqual(sec.name, 'food')
 
+    def test_open_n_write(self):
+        sec_name = 'random_name'
+        xml = XMLFile.open(self.EXIST)
+        self.assertEqual(xml.root.name, 'breakfast_menu')
+        self.assertEqual(len(xml.root.subsections), 5)
+        xml.root.add_subsection(Section(sec_name, value='wwertret', value2='asdf2ew'))
+        self.assertEqual(len(xml.root.subsections), 6)
+        xml.save()
+
+        xml2 = XMLFile.open(self.EXIST)
+        sec_list = xml2.root.get_subsections_by_name(sec_name)
+        self.assertEqual(len(sec_list), 1)
+
     def test_create(self):
         xml = XMLFile.create(self.NEW)
         self.assertIsInstance(xml, XMLFile)
