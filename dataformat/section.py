@@ -5,10 +5,11 @@ from dataformat.decorators import readonly_check, setattr_readonly_check
 
 @setattr_readonly_check
 class Section(object):
-    def __init__(self, name, **new_unordered_params):
+    def __init__(self, name, params=None, **kwargs):
         self.name = name
         self.readonly = False
-        self.params = OrderedDict(new_unordered_params)
+        self.params = params if params is not None else OrderedDict()
+        self.params.update(kwargs)
         self.subsections = SectionCollection()
 
     def __getitem__(self, index):
