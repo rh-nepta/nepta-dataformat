@@ -36,6 +36,10 @@ class Section(object):
     def get_subsections_by_param_val(self, **kwargs):
         return self.subsections.filter(None, **kwargs)
 
+    def str_tree(self):
+        # TODO copy algorithm from testing
+        raise NotImplemented
+
 
 @setattr_readonly_check
 class SectionCollection(object):
