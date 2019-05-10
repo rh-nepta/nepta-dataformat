@@ -3,7 +3,7 @@ import xml.etree.ElementTree as ET
 from xml.dom import minidom
 
 from dataformat.section import Section
-from dataformat.exceptions import DataFormatFileNotFound
+from dataformat.exceptions import DataFormatFileNotFound, DataFormatFileExists
 from dataformat.decorators import readonly_check
 
 
@@ -24,7 +24,7 @@ class XMLFile(object):
     @classmethod
     def create(cls, path):
         if os.path.exists(path):
-            raise DataFormatFileNotFound('File %s already exists' % path)
+            raise DataFormatFileExists('File %s already exists' % path)
 
         open(path, 'w').close()
         return cls(path)

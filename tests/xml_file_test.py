@@ -4,7 +4,7 @@ import os
 from dataformat.package import DataPackage
 from dataformat.section import Section, SectionCollection
 from dataformat.xml_file import XMLFile, MetaXMLFile
-from dataformat.exceptions import DataFormatFileNotFound, DataFormatReadOnlyException
+from dataformat.exceptions import DataFormatFileNotFound, DataFormatReadOnlyException, DataFormatFileExists
 from unittest import TestCase
 
 
@@ -101,6 +101,7 @@ class XMLFileTest(TestCase):
 
     def test_exceptions(self):
         self.assertRaises(DataFormatFileNotFound, XMLFile.open, 'asdfasdf')
+        self.assertRaises(DataFormatFileExists, XMLFile.create, self.EXIST)
 
     def test_readonly(self):
         ro_xml = XMLFile.open(self.EXIST, readonly=True)
