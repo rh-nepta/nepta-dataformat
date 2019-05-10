@@ -19,7 +19,7 @@ class XMLFile(object):
         if not os.path.exists(path) and not os.path.isfile(path):
             raise DataFormatFileNotFound('File %s does not exists' % path)
 
-        return cls(path, cls._load(path), readonly=readonly)
+        return cls(path, None, readonly=readonly)._load()
 
     @classmethod
     def create(cls, path):
@@ -40,10 +40,9 @@ class XMLFile(object):
 
     @readonly_check
     def save(self):
-        self._save(self.path, self.root)
+        self._save()
 
-    @staticmethod
-    def _load(path):
+    def _load(self):
         # Recursively load all child nodes (and its params)
         # and interpret them as sections
         def load_sections(root_node):
@@ -54,17 +53,17 @@ class XMLFile(object):
             for child_node in root_node:
                 chld_sec = load_sections(child_node)
                 sec.subsections.append(chld_sec)
-            # sec.subsections.readonly = self.readonly
+            sec.subsections.readonly = self.readonly
             return sec
 
-        tree = ET.parse(path)
+        tree = ET.parse(self.path)
         root = tree.getroot()
-        root_section = load_sections(root)
-        # root_section.readonly = self.readonly
-        return root_section
+        self._root = load_sections(root)
+        self._root.readonly = self.readonly
+        return self
 
-    @staticmethod
-    def _save(path, root_section):
+    @readonly_check
+    def _save(self):
         def save_sections(sec):
             el = ET.Element(sec.name)
             for index, val in sec.params.items():
@@ -75,10 +74,10 @@ class XMLFile(object):
                 el.append(chld)
             return el
 
-        root = save_sections(root_section)
+        root = save_sections(self.root)
         xml_str = ET.tostring(root)
         xml_minidom = minidom.parseString(xml_str)
-        xml_file = open(path, 'w')
+        xml_file = open(self.path, 'w')
         xml_minidom.writexml(xml_file, indent='  ', addindent='  ', newl='\n')
         xml_file.close()
 
