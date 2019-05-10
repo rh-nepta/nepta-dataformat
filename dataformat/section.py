@@ -1,6 +1,9 @@
 from collections import OrderedDict
 
+from dataformat.decorators import readonly_check, setattr_readonly_check
 
+
+@setattr_readonly_check
 class Section(object):
     def __init__(self, name, **new_unordered_params):
         self.name = name
@@ -17,10 +20,12 @@ class Section(object):
     def __repr__(self):
         return 'Section %s (%s)' % (self.name, self.params or '')
 
+    @readonly_check
     def add_subsection(self, sec):
         self.subsections.append(sec)
         return sec
 
+    @readonly_check
     def delete_subsections(self):
         self.subsections = SectionCollection()
 
@@ -31,6 +36,7 @@ class Section(object):
         return self.subsections.filter(None, **kwargs)
 
 
+@setattr_readonly_check
 class SectionCollection(object):
 
     def __init__(self):
@@ -61,6 +67,7 @@ class SectionCollection(object):
                     ret.append(s)
         return ret
 
+    @readonly_check
     def append(self, s):
         self.sections.append(s)
 
