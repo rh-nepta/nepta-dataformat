@@ -1,14 +1,15 @@
 from collections import OrderedDict
 
 from dataformat.decorators import readonly_check, setattr_readonly_check
+from dataformat.safe_types import DataFormatOrderedDict
 
 
 @setattr_readonly_check
 class Section(object):
     def __init__(self, name, params=None, **kwargs):
         self.name = name
-        self.readonly = False
-        self.params = params if params is not None else OrderedDict()
+        self._readonly = False
+        self.params = DataFormatOrderedDict(params) if params is not None else DataFormatOrderedDict()
         self.params.update(kwargs)
         self.subsections = SectionCollection()
 
@@ -20,6 +21,15 @@ class Section(object):
 
     def __repr__(self):
         return 'Section %s (%s)' % (self.name, self.params or '')
+
+    @property
+    def readonly(self):
+        return self._readonly
+
+    @readonly.setter
+    def readonly(self, val):
+        self._readonly = val
+        self.params.readonly = val
 
     @readonly_check
     def add_subsection(self, sec):
