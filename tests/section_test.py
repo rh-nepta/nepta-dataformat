@@ -1,11 +1,11 @@
 import shutil
 import os
-
-from dataformat.package import DataPackage
-from dataformat.section import Section, SectionCollection
-from dataformat.xml_file import XMLFile, MetaXMLFile
-from dataformat.exceptions import DataFormatFileNotFound, DataFormatReadOnlyException
 from unittest import TestCase
+
+from dataformat.section import Section, SectionCollection
+from dataformat.xml_file import XMLFile
+from dataformat.exceptions import DataFormatReadOnlyException
+from dataformat.safe_types import DataFormatOrderedDict
 
 
 class SectionTest(TestCase):
@@ -39,8 +39,9 @@ class SectionTest(TestCase):
         self.assertRaises(DataFormatReadOnlyException, Section.delete_subsections, root)
         self.assertRaises(DataFormatReadOnlyException, Section.__setattr__, root, 'name', 'asdf')
         self.assertRaises(DataFormatReadOnlyException, Section.__setattr__, root, 'params', dict())
-        self.assertRaises(DataFormatReadOnlyException, dict.__setitem__, root.params, 'key', 'value')
-        self.assertRaises(DataFormatReadOnlyException, dict.update, root.params, 'key', 'value')
+        self.assertRaises(DataFormatReadOnlyException, DataFormatOrderedDict.__setitem__, root.params, 'key', 'value')
+        self.assertRaises(DataFormatReadOnlyException, DataFormatOrderedDict.update, root.params, 'key', 'value')
+        self.assertRaises(DataFormatReadOnlyException, DataFormatOrderedDict.pop, root.params, 'key')
 
 
 class SectionCollectionTest(TestCase):
@@ -71,4 +72,5 @@ class SectionCollectionTest(TestCase):
 
         self.assertRaises(DataFormatReadOnlyException, SectionCollection.append, root_subs, Section('asdf'))
         self.assertRaises(DataFormatReadOnlyException, SectionCollection.__setattr__, root_subs, 'sections', [])
-        self.assertRaises(DataFormatReadOnlyException, list.append, root_subs.sections, Section('adsf'))
+        # TODO do we need DF_RO exception ?
+        self.assertRaises(Exception, list.append, root_subs.sections, Section('adsf'))
