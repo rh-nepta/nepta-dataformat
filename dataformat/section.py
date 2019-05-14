@@ -1,5 +1,3 @@
-from collections import OrderedDict
-
 from dataformat.decorators import readonly_check, setattr_readonly_check
 from dataformat.safe_types import DataFormatOrderedDict
 
@@ -85,4 +83,3 @@ class SectionCollection(object):
     @readonly_check
     def append(self, s):
         self.sections.append(s)
-
