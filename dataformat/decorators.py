@@ -26,4 +26,6 @@ def setattr_readonly_check(cls):
                 raise DataFormatReadOnlyException
             else:
                 super().__setattr__(key, value)
+
+    Wrapped.__name__ = cls.__name__
     return Wrapped
