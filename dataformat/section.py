@@ -45,8 +45,7 @@ class Section(object):
         return self.subsections.filter(None, **kwargs)
 
     def str_tree(self):
-        # TODO copy algorithm from testing
-        raise NotImplemented
+        return "\n".join(str(x) for x in DisplayableSection.generate_tree(self))
 
 
 @setattr_readonly_check
@@ -83,3 +82,44 @@ class SectionCollection(object):
     @readonly_check
     def append(self, s):
         self.sections.append(s)
+
+
+class DisplayableSection(object):
+    """
+    Inspired by : https://stackoverflow.com/questions/9727673/list-directory-tree-structure-in-python
+    """
+    child_prefix_middle = '├──'
+    child_prefix_last = '└──'
+    parent_prefix_middle = '|   '
+    parent_prefix_last = '    '
+
+    def __init__(self, section, parent, is_last):
+        self.section = section
+        self.parent = parent
+        self.parent_prefix = self.get_parent_prefix()
+        self.is_last = is_last
+
+    @classmethod
+    def generate_tree(cls, section, parent=None, is_last=False):
+        root = cls(section, parent, is_last)
+        yield root
+        i = 0
+        last_id = len(section.subsections) - 1
+        for subsection in section:
+            yield from cls.generate_tree(subsection, root, i == last_id)
+            i += 1
+
+    def get_parent_prefix(self):
+        parent_prefix_list = []
+        parent = self.parent
+        while parent and parent.parent is not None:
+            parent_prefix_list.append(self.parent_prefix_last if parent.is_last else self.parent_prefix_middle)
+            parent = parent.parent
+        return "".join(reversed(parent_prefix_list))
+
+    def __str__(self):
+        if self.parent is None:
+            return str(self.section)
+        bundle_name = "{!s} {!s}".format(self.child_prefix_last if self.is_last else self.child_prefix_middle,
+                                         self.section)
+        return self.parent_prefix + bundle_name

@@ -1,7 +1,7 @@
 all:
 
 test:
-	pytest-3
+	pytest-3 -vs
 
 clean:
 	find . -type f -name "*.pyc" -exec rm -f {} \;

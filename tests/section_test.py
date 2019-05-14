@@ -22,7 +22,7 @@ class SectionTest(TestCase):
     @classmethod
     def setUp(cls):
         shutil.copy(
-            os.path.join(cls.EXAMPLE_DIR, 'menu.xml'),
+            os.path.join(cls.EXAMPLE_DIR, 'meta.xml'),
             cls.EXIST
         )
 
@@ -45,6 +45,11 @@ class SectionTest(TestCase):
         self.assertRaises(DataFormatReadOnlyException, DataFormatOrderedDict.__setitem__, root.params, 'key', 'value')
         self.assertRaises(DataFormatReadOnlyException, DataFormatOrderedDict.update, root.params, 'key', 'value')
         self.assertRaises(DataFormatReadOnlyException, DataFormatOrderedDict.pop, root.params, 'key')
+
+    def test_section_tree(self):
+        xml1 = XMLFile.open(self.EXIST, readonly=True)
+        print()
+        print(xml1.root.str_tree())
 
 
 class SectionCollectionTest(TestCase):
