@@ -47,12 +47,12 @@ class XMLFile(object):
         # Recursively load all child nodes (and its params)
         # and interpret them as sections
         def load_sections(root_node):
-            # TODO think about frozen dict
             params_list = OrderedDict(root_node.attrib.items())
             sec = Section(root_node.tag, params_list)
+            
             for child_node in root_node:
-                chld_sec = load_sections(child_node)
-                sec.subsections.append(chld_sec)
+                sec.subsections.append(load_sections(child_node))
+
             if self.readonly:
                 sec.subsections.sections = tuple(sec.subsections.sections)
             sec.subsections.readonly = self.readonly
@@ -72,8 +72,8 @@ class XMLFile(object):
                 el.set(index, str(val))
 
             for subsec in sec.subsections:
-                chld = save_sections(subsec)
-                el.append(chld)
+                el.append(save_sections(subsec))
+
             return el
 
         root = save_sections(self.root)
