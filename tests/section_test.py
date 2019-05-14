@@ -34,6 +34,9 @@ class SectionTest(TestCase):
         xml1 = XMLFile.open(self.EXIST, readonly=True)
         root = xml1.root
 
+        self.assertEqual(root.readonly, True)
+        self.assertEqual(root.subsections.readonly, True)
+
         # test Section
         self.assertRaises(DataFormatReadOnlyException, Section.add_subsection, root, Section('asdf'))
         self.assertRaises(DataFormatReadOnlyException, Section.delete_subsections, root)
