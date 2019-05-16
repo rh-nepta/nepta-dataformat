@@ -38,7 +38,6 @@ class SectionTest(TestCase):
         self.assertEqual(root.subsections.readonly, True)
 
         # test Section
-        self.assertRaises(DataFormatReadOnlyException, Section.add_subsection, root, Section('asdf'))
         self.assertRaises(DataFormatReadOnlyException, Section.delete_subsections, root)
         self.assertRaises(DataFormatReadOnlyException, Section.__setattr__, root, 'name', 'asdf')
         self.assertRaises(DataFormatReadOnlyException, Section.__setattr__, root, 'params', dict())
