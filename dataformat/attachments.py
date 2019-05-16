@@ -19,12 +19,13 @@ class DirectoryAttachment(GenericAttachment):
     pass
 
 
-
 class AttachmentCollection(object):
+    META_FILE = 'attachments.xml'
+    ATTCH_DIR = 'attachments'
 
     @classmethod
     def open(cls, path):
-        att_meta = XMLFile.open(os.path.join(path, 'attachments.xml'))
+        att_meta = XMLFile.open(os.path.join(path, cls.META_FILE))
         collection = []
 
         for attach in att_meta.root:
@@ -35,7 +36,9 @@ class AttachmentCollection(object):
 
     @classmethod
     def create(cls, path):
-        raise NotImplemented
+        os.mkdir(os.path.join(path, cls.ATTCH_DIR))
+        att_meta = XMLFile.create(os.path.join(path, cls.META_FILE))
+        return cls(path, att_meta, [])
 
     def __init__(self, path, att_meta, collection):
         self.path = path
