@@ -7,6 +7,7 @@ from dataformat.xml_file import XMLFile
 @dataclass
 class GenericAttachment:
     origin: str
+    type: str
     path: str
     uuid: str
 
@@ -30,7 +31,9 @@ class AttachmentCollection(object):
 
         for attach in att_meta.root:
             if attach.params['name'] == 'Command':
-                collection.append(CommandAttachment(attach.params['origin'], attach.params['path'], attach.params['uuid']))
+                collection.append(FileAttachment(attach.params['origin'],attach.params['name'], attach.params['path'], attach.params['uuid']))
+            elif attach.params['name'] == 'Directory':
+                collection.append(DirectoryAttachment(attach.params['origin'], attach.params['name'], attach.params['path'], attach.params['uuid']))
 
         return cls(path, att_meta, collection)
 
