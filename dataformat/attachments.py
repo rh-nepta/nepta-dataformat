@@ -48,6 +48,9 @@ class AttachmentCollection(object):
         self.att_meta = att_meta
         self.collection = collection
 
+    def __str__(self):
+        return "{}: {}\n\t{}".format(self.__class__.__name__, self.path, "\n\t".join(map(str, self.collection)))
+
     def save(self):
         self.att_meta.save()
         # TODO check if specified attachments are really here
