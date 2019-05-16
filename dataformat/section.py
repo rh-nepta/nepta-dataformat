@@ -28,6 +28,7 @@ class Section(object):
     def readonly(self, val):
         self._readonly = val
         self.params.readonly = val
+        self.subsections.readonly = val
 
     @readonly_check
     def delete_subsections(self):
