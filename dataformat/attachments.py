@@ -15,16 +15,9 @@ class FileAttachment(GenericAttachment):
     pass
 
 
-class CommandAttachment(GenericAttachment):
-    pass
-
-
 class DirectoryAttachment(GenericAttachment):
     pass
 
-
-class UrlAttachment(GenericAttachment):
-    pass
 
 
 class AttachmentCollection(object):
