@@ -55,13 +55,12 @@ class XMLFile(object):
 
             if self.readonly:
                 sec.subsections.sections = tuple(sec.subsections.sections)
-            sec.subsections.readonly = self.readonly
+            sec.readonly = self.readonly
             return sec
 
         tree = ET.parse(self.path)
         root = tree.getroot()
         self._root = load_sections(root)
-        self._root.readonly = self.readonly
         return self
 
     @readonly_check
