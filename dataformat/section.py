@@ -12,7 +12,7 @@ class Section(object):
         self.subsections = SectionCollection()
 
     def __getitem__(self, index):
-        return self.get_subsections_by_name(index)
+        return self.subsections.filter(index)
 
     def __iter__(self):
         return iter(self.subsections)
