@@ -25,3 +25,6 @@ class DataFormatOrderedDict(OrderedDict):
     @readonly_check
     def popitem(self, last: bool = ...):
         super().popitem(last)
+
+
+# TODO make DataFormatList with read only checks

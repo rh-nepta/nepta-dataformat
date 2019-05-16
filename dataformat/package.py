@@ -7,7 +7,13 @@ from dataformat.attachments import AttachmentCollection
 class DataPackage(object):
 
     @classmethod
+    def is_package(cls):
+        raise NotImplemented  # TODO
+
+    @classmethod
     def open(cls, path, meta=True, store=True, attach=True):
+        # TODO readonly
+        # TODO think about NullObj mainly to delete None
         meta = MetaXMLFile.open(os.path.join(path, 'meta.xml')) if meta else None
         store = XMLFile.open(os.path.join(path, 'store.xml')) if store else None
         attach = AttachmentCollection.open(os.path.join(path, 'attachments')) if attach else None
