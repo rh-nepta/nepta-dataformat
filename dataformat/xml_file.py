@@ -89,7 +89,7 @@ class MetaXMLFile(object):
     @classmethod
     def open(cls, path, readonly=False):
         file = XMLFile.open(path)
-        meta_sec = file.root.get_subsections_by_name('Settings')[0]
+        meta_sec = file.root.subsections.filter('Settings')[0]
         return cls(file, meta_sec, readonly)
 
     @classmethod
@@ -97,7 +97,7 @@ class MetaXMLFile(object):
         file = XMLFile.create(path)
         meta_sec = Section('Settings')
         file.root = Section('BeakerRunResult')
-        file.root.add_subsection(meta_sec)
+        file.root.subsections.append(meta_sec)
         file.save()
         return cls(file, meta_sec)
 
@@ -116,7 +116,7 @@ class MetaXMLFile(object):
     def save(self):
         self._meta_section_ptr.delete_subsections()
         for k, v in self._val_dict.items():
-            self._meta_section_ptr.add_subsection(Section(k, value=v))
+            self._meta_section_ptr.subsections.append(Section(k, value=v))
         self._xml_file.save()
 
     @readonly_check
