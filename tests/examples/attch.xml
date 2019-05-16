@@ -3,4 +3,6 @@
     <attachment name="Command" origin="cat /sys/kernel/debug/x86/pti_enabled" path="attachments/Command/cat-syskerneldebugx86pti_enabled/f1623c03-3e01-4144-ad80-37b8282781fc" uuid="f1623c03-3e01-4144-ad80-37b8282781fc"/>
     <attachment name="Command" origin="cat /sys/kernel/debug/x86/ibpb_enabled" path="attachments/Command/cat-syskerneldebugx86ibpb_enabled/a904d0ef-8f72-4cb2-a0ef-e28060897bac" uuid="a904d0ef-8f72-4cb2-a0ef-e28060897bac"/>
     <attachment name="Command" origin="cat /sys/kernel/debug/x86/ibrs_enabled" path="attachments/Command/cat-syskerneldebugx86ibrs_enabled/bdf9b1f0-2c63-4cbc-b8d1-37e5b4640e69" uuid="bdf9b1f0-2c63-4cbc-b8d1-37e5b4640e69"/>
+    <attachment name="Directory" origin="/etc/sysconfig/network-scripts/" path="attachments/Directory/etc/sysconfig/network-scripts/ade703ce-80e3-44d4-8f35-470d414a5ada" uuid="ade703ce-80e3-44d4-8f35-470d414a5ada"/>
+
   </attachments>
