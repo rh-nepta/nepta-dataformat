@@ -45,6 +45,11 @@ class SectionTest(TestCase):
         self.assertRaises(DataFormatReadOnlyException, DataFormatOrderedDict.update, root.params, 'key', 'value')
         self.assertRaises(DataFormatReadOnlyException, DataFormatOrderedDict.pop, root.params, 'key')
 
+        subsec = root.subsections[0]
+        self.assertRaises(DataFormatReadOnlyException, Section.delete_subsections, subsec)
+        self.assertRaises(DataFormatReadOnlyException, Section.__setattr__, subsec, 'name', 'asdf')
+        self.assertRaises(DataFormatReadOnlyException, Section.__setattr__, subsec, 'params', dict())
+
     def test_section_tree(self):
         xml1 = XMLFile.open(self.EXIST, readonly=True)
         print()
