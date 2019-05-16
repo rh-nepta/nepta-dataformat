@@ -50,6 +50,11 @@ class AttachmentCollection(object):
         self.collection = collection
 
     def save(self):
+        self.att_meta.save()
+        # TODO check if specified attachments are really here
+
+    def new(self):
         raise NotImplemented
-    
+        # TODO copy factory from libres ?
+
 
