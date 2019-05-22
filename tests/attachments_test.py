@@ -17,6 +17,7 @@ class AttachmentCollectionTest(TestCase):
     @classmethod
     def setUpClass(cls):
         os.mkdir(cls.TEST_DIR)
+        os.mkdir(cls.NEW)
 
     @classmethod
     def setUp(cls):
