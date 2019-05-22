@@ -16,6 +16,9 @@ class Attachment:
 class AttachmentCollection(object):
     META_FILE = 'attachments.xml'
     ATTCH_DIR = 'attachments'
+    ELEM_NAME = 'attachment'
+    ROOT_NAME = 'attachments'
+
     class Types(Enum):
         FILE = 'File'
         DIRECTORY = 'Directory'
@@ -50,8 +53,10 @@ class AttachmentCollection(object):
         return "{}: {}\n\t{}".format(self.__class__.__name__, self.path, "\n\t".join(map(str, self.collection)))
 
     def save(self):
+        self.att_meta.root = Section(self.ROOT_NAME)
+        for att in self.collection:
+            self.att_meta.root.subsections.append(Section(self.ELEM_NAME, **dict(att.__dict__)))
         self.att_meta.save()
-        # TODO check if specified attachments are really here
 
     def new(self):
         raise NotImplemented
