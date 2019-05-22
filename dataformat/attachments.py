@@ -1,5 +1,6 @@
 import os
 from dataclasses import dataclass
+from enum import Enum
 
 from dataformat.xml_file import XMLFile
 
@@ -15,6 +16,11 @@ class Attachment:
 class AttachmentCollection(object):
     META_FILE = 'attachments.xml'
     ATTCH_DIR = 'attachments'
+    class Types(Enum):
+        FILE = 'File'
+        DIRECTORY = 'Directory'
+        COMMAND = 'Command'
+        URL = 'Url'
 
     @classmethod
     def open(cls, path):
