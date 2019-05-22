@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from enum import Enum
 
 from dataformat.xml_file import XMLFile
+from dataformat.section import Section
 
 
 @dataclass
@@ -51,6 +52,12 @@ class AttachmentCollection(object):
 
     def __str__(self):
         return "{}: {}\n\t{}".format(self.__class__.__name__, self.path, "\n\t".join(map(str, self.collection)))
+
+    def __iter__(self):
+        return iter(self.collection)
+
+    def __len__(self):
+        return len(self.collection)
 
     def save(self):
         self.att_meta.root = Section(self.ROOT_NAME)
