@@ -12,7 +12,7 @@ from dataformat.section import Section
 @dataclass
 class Attachment:
     origin: str
-    type: str
+    name: str
     path: str
     uuid: str
 
@@ -35,7 +35,7 @@ class AttachmentCollection(object):
         collection = []
 
         for attach in att_meta.root:
-            collection.append(Attachment(attach.params['origin'], attach.params['type'], attach.params['path'],
+            collection.append(Attachment(attach.params['origin'], attach.params['name'], attach.params['path'],
                                          attach.params['uuid']))
 
         return cls(path, att_meta, collection)
@@ -65,7 +65,7 @@ class AttachmentCollection(object):
     def save(self):
         self.att_meta.root = Section(self.ROOT_NAME)
         for att in self.collection:
-            self.att_meta.root.subsections.append(Section(self.ELEM_NAME, **dict(att.__dict__)))
+            self.att_meta.root.subsections.append(Section(self.ELEM_NAME, dict(att.__dict__)))
         self.att_meta.save()
 
     def new(self, type, origin):
