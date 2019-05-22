@@ -3,7 +3,7 @@ import os
 from unittest import TestCase
 
 from dataformat.package import DataPackage
-from dataformat.xml_file import XMLFile
+from dataformat.xml_file import XMLFile,MetaXMLFile
 
 
 class BasicPackageTests(TestCase):
@@ -22,6 +22,8 @@ class BasicPackageTests(TestCase):
                     os.path.join(cls.OPEN_PATH, 'meta.xml'))
         shutil.copy(os.path.join(cls.EXAMPLE_DIR, 'menu.xml'),
                     os.path.join(cls.OPEN_PATH, 'store.xml'))
+        shutil.copy(os.path.join(cls.EXAMPLE_DIR, 'attch.xml'),
+                    os.path.join(cls.OPEN_PATH, 'attachments.xml'))
 
     def test_create(self):
         p = DataPackage.create(self.CREATE_PATH)
@@ -29,16 +31,17 @@ class BasicPackageTests(TestCase):
         p.close()
 
     def test_open(self):
+        # TODO test more than just class type
         p = DataPackage.open(self.OPEN_PATH)
         self.assertIsInstance(p, DataPackage)
-        self.assertIsInstance(p.meta, XMLFile)
+        self.assertIsInstance(p.meta, MetaXMLFile)
         self.assertIsInstance(p.store, XMLFile)
         p.close()
 
     def test_open_with(self):
         with DataPackage.open(self.OPEN_PATH) as p:
             self.assertIsInstance(p, DataPackage)
-            self.assertIsInstance(p.meta, XMLFile)
+            self.assertIsInstance(p.meta, MetaXMLFile)
             self.assertIsInstance(p.store, XMLFile)
 
     @classmethod

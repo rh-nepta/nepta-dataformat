@@ -38,13 +38,17 @@ class SectionTest(TestCase):
         self.assertEqual(root.subsections.readonly, True)
 
         # test Section
-        self.assertRaises(DataFormatReadOnlyException, Section.add_subsection, root, Section('asdf'))
         self.assertRaises(DataFormatReadOnlyException, Section.delete_subsections, root)
         self.assertRaises(DataFormatReadOnlyException, Section.__setattr__, root, 'name', 'asdf')
         self.assertRaises(DataFormatReadOnlyException, Section.__setattr__, root, 'params', dict())
         self.assertRaises(DataFormatReadOnlyException, DataFormatOrderedDict.__setitem__, root.params, 'key', 'value')
         self.assertRaises(DataFormatReadOnlyException, DataFormatOrderedDict.update, root.params, 'key', 'value')
         self.assertRaises(DataFormatReadOnlyException, DataFormatOrderedDict.pop, root.params, 'key')
+
+        subsec = root.subsections[0]
+        self.assertRaises(DataFormatReadOnlyException, Section.delete_subsections, subsec)
+        self.assertRaises(DataFormatReadOnlyException, Section.__setattr__, subsec, 'name', 'asdf')
+        self.assertRaises(DataFormatReadOnlyException, Section.__setattr__, subsec, 'params', dict())
 
     def test_section_tree(self):
         xml1 = XMLFile.open(self.EXIST, readonly=True)

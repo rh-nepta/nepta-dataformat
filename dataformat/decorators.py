@@ -3,6 +3,7 @@ from functools import wraps
 from dataformat.exceptions import DataFormatReadOnlyException
 
 
+# TODO : make this decorator with arguments for attr
 def readonly_check(func):
     attr = 'readonly'
 

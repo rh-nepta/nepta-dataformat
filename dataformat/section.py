@@ -12,7 +12,7 @@ class Section(object):
         self.subsections = SectionCollection()
 
     def __getitem__(self, index):
-        return self.get_subsections_by_name(index)
+        return self.subsections.filter(index)
 
     def __iter__(self):
         return iter(self.subsections)
@@ -28,21 +28,11 @@ class Section(object):
     def readonly(self, val):
         self._readonly = val
         self.params.readonly = val
-
-    @readonly_check
-    def add_subsection(self, sec):
-        self.subsections.append(sec)
-        return sec
+        self.subsections.readonly = val
 
     @readonly_check
     def delete_subsections(self):
         self.subsections = SectionCollection()
-
-    def get_subsections_by_name(self, name):
-        return self.subsections.filter(name)
-
-    def get_subsections_by_param_val(self, **kwargs):
-        return self.subsections.filter(None, **kwargs)
 
     def str_tree(self):
         return "\n".join(str(x) for x in DisplayableSection.generate_tree(self))
