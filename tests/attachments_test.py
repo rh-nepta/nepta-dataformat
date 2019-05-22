@@ -1,4 +1,4 @@
-from unittest  import TestCase
+from unittest import TestCase
 import os
 import shutil
 
@@ -29,6 +29,9 @@ class AttachmentCollectionTest(TestCase):
             os.path.join(cls.EXIST, 'attachments')
         )
 
+    def tearDown(self):
+        shutil.rmtree(self.EXIST)
+
     @classmethod
     def tearDownClass(cls):
         shutil.rmtree(cls.TEST_DIR)
@@ -36,5 +39,33 @@ class AttachmentCollectionTest(TestCase):
     def test_open(self):
         ac = AttachmentCollection.open(self.EXIST)
         print("asdf")
-        
+
+    def test_create(self):
+        ac = AttachmentCollection.create(self.NEW)
+
+        self.assertTrue(os.path.exists(self.NEW))
+        self.assertTrue(os.path.exists(os.path.join(self.NEW, 'attachments')))
+        self.assertTrue(os.path.exists(os.path.join(self.NEW, 'attachments.xml')))
+
+        att1 = ac.new(ac.Types.FILE, '/etc/krb5.conf')
+        with open(att1.path, 'w') as f:
+            f.write("sadljfhsaldjfhsadlkjfh")
+        att2 = ac.new(ac.Types.DIRECTORY, '/etc/')
+
+        self.assertTrue(os.path.exists(att1.path))
+        self.assertTrue(os.path.exists(att2.path))
+        self.assertNotEqual(att1.uuid, att2.uuid)
+
+        ac.save()
+        ac.save()
+
+        ac_check = AttachmentCollection.open(self.NEW)
+        self.assertEqual(len(ac), len(ac_check))
+
+        for att in ac_check:
+            self.assertTrue(os.path.exists(att.path))
+
+        self.assertEqual(ac_check.collection[0], att1)
+        self.assertEqual(ac_check.collection[1], att2)
+
 
