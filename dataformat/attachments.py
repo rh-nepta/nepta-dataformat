@@ -1,4 +1,7 @@
 import os
+import re
+from uuid import uuid4
+
 from dataclasses import dataclass
 from enum import Enum
 
@@ -65,8 +68,23 @@ class AttachmentCollection(object):
             self.att_meta.root.subsections.append(Section(self.ELEM_NAME, **dict(att.__dict__)))
         self.att_meta.save()
 
-    def new(self):
-        raise NotImplemented
-        # TODO copy factory from libres ?
+    def new(self, type, origin):
+        def slugify(name):
+            value = re.sub(r'[^\w\s-]', '-', name).strip().lower()
+            return re.sub(r'[-\s]+', '--', value)
+
+        new_uuid = str(uuid4())
+        new_dir = os.path.join(self.path, type.value, slugify(origin))
+        new_path = os.path.join(new_dir, new_uuid)
+
+        new_att = Attachment(origin, type.value, new_path, new_uuid)
+        self.collection.append(new_att)
+
+        if type == self.Types.DIRECTORY:
+            os.makedirs(new_path)
+        else:
+            os.makedirs(new_dir)
+
+        return new_att
 
 
