@@ -39,8 +39,10 @@ class AttachmentCollection(object):
 
     @classmethod
     def create(cls, path):
+        os.mkdir(path)
         os.mkdir(os.path.join(path, cls.ATTCH_DIR))
         att_meta = XMLFile.create(os.path.join(path, cls.META_FILE))
+        att_meta.root = Section(cls.ROOT_NAME)
         return cls(path, att_meta, [])
 
     def __init__(self, path, att_meta, collection):
