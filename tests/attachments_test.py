@@ -1,6 +1,7 @@
-from unittest import TestCase
 import os
 import shutil
+from unittest import TestCase
+from collections import defaultdict
 
 from dataformat.attachments import AttachmentCollection
 
@@ -38,7 +39,14 @@ class AttachmentCollectionTest(TestCase):
 
     def test_open(self):
         ac = AttachmentCollection.open(self.EXIST)
-        print("asdf")
+        self.assertEqual(len(ac), 4)
+
+        counter = defaultdict(int)
+        for att in ac:
+            counter[att.name] += 1
+
+        self.assertEqual(counter['Command'], 3)
+        self.assertEqual(counter['Directory'], 1)
 
     def test_create(self):
         ac = AttachmentCollection.create(self.NEW)
