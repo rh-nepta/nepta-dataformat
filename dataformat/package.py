@@ -11,12 +11,11 @@ class DataPackage(object):
         raise NotImplemented  # TODO
 
     @classmethod
-    def open(cls, path, meta=True, store=True, attach=True):
-        # TODO readonly
+    def open(cls, path, readonly=False, meta=True, store=True, attach=True):
         # TODO think about NullObj mainly to delete None
-        meta = MetaXMLFile.open(os.path.join(path, 'meta.xml')) if meta else None
-        store = XMLFile.open(os.path.join(path, 'store.xml')) if store else None
-        attach = AttachmentCollection.open(path) if attach else None
+        meta = MetaXMLFile.open(os.path.join(path, 'meta.xml'), readonly) if meta else None
+        store = XMLFile.open(os.path.join(path, 'store.xml'), readonly) if store else None
+        attach = AttachmentCollection.open(path, readonly) if attach else None
         return cls(path, meta, store, attach)
 
     @classmethod
