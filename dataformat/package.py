@@ -7,7 +7,7 @@ from dataformat.attachments import AttachmentCollection
 class DataPackage(object):
 
     @classmethod
-    def is_package(cls):
+    def is_package(cls, path):
         raise NotImplemented  # TODO
 
     @classmethod
