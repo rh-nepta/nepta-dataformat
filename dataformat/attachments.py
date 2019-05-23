@@ -7,16 +7,20 @@ from enum import Enum
 
 from dataformat.xml_file import XMLFile
 from dataformat.section import Section
+from dataformat.decorators import readonly_check_methods
 
 
+@readonly_check_methods('__setattr__')
 @dataclass
 class Attachment:
     origin: str
     name: str
     path: str
     uuid: str
+    readonly: bool = False
 
 
+@readonly_check_methods('new', 'save', '__setattr__')
 class AttachmentCollection(object):
     META_FILE = 'attachments.xml'
     ATTCH_DIR = 'attachments'
@@ -30,27 +34,28 @@ class AttachmentCollection(object):
         URL = 'Url'
 
     @classmethod
-    def open(cls, path):
+    def open(cls, path, readonly=False):
         att_meta = XMLFile.open(os.path.join(path, cls.META_FILE))
         collection = []
 
         for attach in att_meta.root:
             collection.append(Attachment(attach.params['origin'], attach.params['name'], attach.params['path'],
-                                         attach.params['uuid']))
+                                         attach.params['uuid'], readonly))
 
-        return cls(path, att_meta, collection)
+        return cls(path, att_meta, collection, readonly)
 
     @classmethod
     def create(cls, path):
         os.mkdir(os.path.join(path, cls.ATTCH_DIR))
         att_meta = XMLFile.create(os.path.join(path, cls.META_FILE))
         att_meta.root = Section(cls.ROOT_NAME)
-        return cls(path, att_meta, [])
+        return cls(path, att_meta, [], False)
 
-    def __init__(self, path, att_meta, collection):
+    def __init__(self, path, att_meta, collection, readonly):
         self.path = path
         self.att_meta = att_meta
         self.collection = collection
+        self.readonly = readonly
 
     def __str__(self):
         return "{}: {}\n\t{}".format(self.__class__.__name__, self.path, "\n\t".join(map(str, self.collection)))
