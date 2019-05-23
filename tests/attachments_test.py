@@ -4,6 +4,7 @@ from unittest import TestCase
 from collections import defaultdict
 
 from dataformat.attachments import AttachmentCollection
+from dataformat.exceptions import DataFormatReadOnlyException
 
 
 class AttachmentCollectionTest(TestCase):
@@ -77,4 +78,10 @@ class AttachmentCollectionTest(TestCase):
         self.assertEqual(ac_check.collection[0], att1)
         self.assertEqual(ac_check.collection[1], att2)
 
+    def test_readonly(self):
+        ac = AttachmentCollection.open(self.EXIST, readonly=True)
+        self.assertRaises(
+            DataFormatReadOnlyException, AttachmentCollection.new, ac, AttachmentCollection.Types.DIRECTORY, '/')
+        self.assertRaises(DataFormatReadOnlyException, AttachmentCollection.save, ac)
+        self.assertRaises(DataFormatReadOnlyException, setattr, ac, 'path', 'asdf')
 
