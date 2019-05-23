@@ -53,8 +53,6 @@ class XMLFile(object):
             for child_node in root_node:
                 sec.subsections.append(load_sections(child_node))
 
-            if self.readonly:
-                sec.subsections.sections = tuple(sec.subsections.sections)
             sec.readonly = self.readonly
             return sec
 

@@ -27,4 +27,10 @@ class DataFormatOrderedDict(OrderedDict):
         super().popitem(last)
 
 
+@setattr_readonly_check
+class DataFormatList(list):
+
+    def __init__(self, *args, **kwargs):
+        self.readonly = False
+        super().__init__(*args, **kwargs)
 # TODO make DataFormatList with read only checks

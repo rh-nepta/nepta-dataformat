@@ -1,5 +1,5 @@
 from dataformat.decorators import readonly_check, setattr_readonly_check
-from dataformat.safe_types import DataFormatOrderedDict
+from dataformat.safe_types import DataFormatOrderedDict, DataFormatList
 
 
 @setattr_readonly_check
@@ -42,8 +42,8 @@ class Section(object):
 class SectionCollection(object):
 
     def __init__(self):
-        self.sections = []
-        self.readonly = False
+        self.sections = DataFormatList()
+        self._readonly = False
 
     def __iter__(self):
         return iter(self.sections)
@@ -53,6 +53,15 @@ class SectionCollection(object):
 
     def __getitem__(self, index):
         return self.sections[index]
+
+    @property
+    def readonly(self):
+        return self._readonly
+
+    @readonly.setter
+    def readonly(self, val):
+        self._readonly = val
+        self.sections.readonly = val
 
     def filter(self, name=None, **params):
         ret = SectionCollection()
