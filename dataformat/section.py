@@ -1,8 +1,8 @@
-from dataformat.decorators import readonly_check, setattr_readonly_check
+from dataformat.decorators import readonly_check, readonly_check_methods
 from dataformat.safe_types import DataFormatOrderedDict, DataFormatList
 
 
-@setattr_readonly_check
+@readonly_check_methods('__setattr__', 'delete_subsections')
 class Section(object):
     def __init__(self, name, params=None, **kwargs):
         self.name = name
@@ -30,7 +30,6 @@ class Section(object):
         self.params.readonly = val
         self.subsections.readonly = val
 
-    @readonly_check
     def delete_subsections(self):
         self.subsections = SectionCollection()
 
@@ -38,7 +37,7 @@ class Section(object):
         return "\n".join(str(x) for x in DisplayableSection.generate_tree(self))
 
 
-@setattr_readonly_check
+@readonly_check_methods('append', '__setattr__')
 class SectionCollection(object):
 
     def __init__(self):
@@ -78,7 +77,6 @@ class SectionCollection(object):
                     ret.append(s)
         return ret
 
-    @readonly_check
     def append(self, s):
         self.sections.append(s)
 
