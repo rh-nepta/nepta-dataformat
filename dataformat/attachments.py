@@ -10,12 +10,14 @@ from dataformat.section import Section
 from dataformat.decorators import readonly_check_methods
 
 
+@readonly_check_methods('__setattr__')
 @dataclass
 class Attachment:
     origin: str
     name: str
     path: str
     uuid: str
+    readonly: bool = False
 
 
 @readonly_check_methods('new', 'save', '__setattr__')
@@ -38,7 +40,7 @@ class AttachmentCollection(object):
 
         for attach in att_meta.root:
             collection.append(Attachment(attach.params['origin'], attach.params['name'], attach.params['path'],
-                                         attach.params['uuid']))
+                                         attach.params['uuid'], readonly))
 
         return cls(path, att_meta, collection, readonly)
 
