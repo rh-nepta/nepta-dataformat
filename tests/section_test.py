@@ -5,7 +5,7 @@ from unittest import TestCase
 from dataformat.section import Section, SectionCollection
 from dataformat.xml_file import XMLFile
 from dataformat.exceptions import DataFormatReadOnlyException
-from dataformat.safe_types import DataFormatOrderedDict
+from dataformat.safe_types import DataFormatOrderedDict, DataFormatList
 
 
 class SectionTest(TestCase):
@@ -84,5 +84,5 @@ class SectionCollectionTest(TestCase):
 
         self.assertRaises(DataFormatReadOnlyException, SectionCollection.append, root_subs, Section('asdf'))
         self.assertRaises(DataFormatReadOnlyException, SectionCollection.__setattr__, root_subs, 'sections', [])
-        # TODO do we need DF_RO exception ?
-        self.assertRaises(Exception, list.append, root_subs.sections, Section('adsf'))
+        self.assertRaises(DataFormatReadOnlyException, DataFormatList.append, root_subs.sections, Section('adsf'))
+        self.assertRaises(DataFormatReadOnlyException, DataFormatList.pop, root_subs.sections, Section('adsf'))
