@@ -85,3 +85,6 @@ class AttachmentCollectionTest(TestCase):
         self.assertRaises(DataFormatReadOnlyException, AttachmentCollection.save, ac)
         self.assertRaises(DataFormatReadOnlyException, setattr, ac, 'path', 'asdf')
 
+        for attch in ac:
+            self.assertRaises(DataFormatReadOnlyException, setattr, attch, 'name', 'asdf')
+
