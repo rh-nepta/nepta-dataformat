@@ -3,18 +3,23 @@ from functools import wraps
 from dataformat.exceptions import DataFormatReadOnlyException
 
 
-# TODO : make this decorator with arguments for attr
-def readonly_check(func):
+def readonly_check(arg1=None):
     attr = 'readonly'
 
-    @wraps(func)
-    def inner(instance, *args, **kwargs):
-        if getattr(instance, attr):
-            raise DataFormatReadOnlyException
-        else:
-            func(instance, *args, **kwargs)
+    def wrap(func):
+        @wraps(func)
+        def inner(instance, *args, **kwargs):
+            if getattr(instance, attr):
+                raise DataFormatReadOnlyException
+            else:
+                func(instance, *args, **kwargs)
 
-    return inner
+        return inner
+    if callable(arg1):
+        return wrap(arg1)
+    else:
+        attr = arg1
+        return wrap
 
 
 def setattr_readonly_check(cls):
