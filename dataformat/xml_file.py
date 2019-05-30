@@ -4,7 +4,7 @@ import xml.etree.ElementTree as ET
 from xml.dom import minidom
 
 from dataformat.section import Section
-from dataformat.exceptions import DataFormatFileNotFound, DataFormatFileExists
+from dataformat.exceptions import DataFormatFileNotFound, DataFormatFileExists, DataFormatNullFile
 from dataformat.decorators import readonly_check
 
 
@@ -129,3 +129,38 @@ class MetaXMLFile(object):
     def __exit__(self, exc_type, exc_val, exc_tb):
         if not self.readonly:
             self.save()
+
+
+class NullFile(object):
+    # TODO think about better solution of this
+
+    def __init__(self, name='Null'):
+        self.name = name
+
+    def throw(self):
+        raise DataFormatNullFile('{} is not opened. Operation is not permitted!!!'.format(self.name))
+
+    def __getattr__(self, item):
+        if item in ['throw', 'name']:
+            return super().__getattribute__(item)
+        else:
+            self.throw()
+
+    def __setattr__(self, item, val):
+        if item in ['throw', 'name']:
+            return super().__setattr__(item, val)
+        else:
+            self.throw()
+
+    def __getitem__(self, item):
+        self.throw()
+
+    def __setitem__(self, item, value):
+        self.throw()
+
+    def __len__(self):
+        self.throw()
+
+    def __iter__(self):
+        self.throw()
+

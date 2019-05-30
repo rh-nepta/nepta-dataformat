@@ -12,3 +12,7 @@ class DataFormatFileExists(BaseDataFormatException):
 
 class DataFormatReadOnlyException(BaseDataFormatException):
     pass
+
+
+class DataFormatNullFile(BaseDataFormatException):
+    pass

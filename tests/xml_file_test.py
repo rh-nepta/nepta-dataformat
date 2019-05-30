@@ -1,10 +1,12 @@
 import shutil
 import os
+import operator
 
 from dataformat.package import DataPackage
 from dataformat.section import Section, SectionCollection
 from dataformat.xml_file import XMLFile, MetaXMLFile
-from dataformat.exceptions import DataFormatFileNotFound, DataFormatReadOnlyException, DataFormatFileExists
+from dataformat.exceptions import DataFormatFileNotFound, DataFormatReadOnlyException, DataFormatFileExists, \
+    DataFormatNullFile
 from unittest import TestCase
 
 
@@ -197,9 +199,24 @@ class MetaXMLFileTest(TestCase):
             self.assertEqual(m2['BeakerJobID'], '3483869')
 
     def test_readonly(self):
-
         with MetaXMLFile.open(self.EXIST, readonly=True) as m1:
             self.assertRaises(DataFormatReadOnlyException, MetaXMLFile.save, m1)
             self.assertRaises(DataFormatReadOnlyException, MetaXMLFile.__setitem__, m1, 'asdf', 'asdf')
 
 
+class NullFileTest(TestCase):
+
+    def test_raise(self):
+        p = DataPackage.open('asdf', False, False, False, False)
+
+        # meta
+        self.assertRaises(DataFormatNullFile, operator.getitem, p.meta, 'Family')
+        self.assertRaises(DataFormatNullFile, operator.setitem, p.meta, 'Version', '0.2')
+
+        # store
+        self.assertRaises(DataFormatNullFile, setattr, p.store, 'root', Section('asdf'))
+        self.assertRaises(DataFormatNullFile, getattr, p.store, 'path')
+
+        # attch
+        self.assertRaises(DataFormatNullFile, len, p.attch)
+        self.assertRaises(DataFormatNullFile, iter, p.attch)
