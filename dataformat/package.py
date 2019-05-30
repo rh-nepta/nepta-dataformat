@@ -1,6 +1,6 @@
 import os
 
-from dataformat.xml_file import XMLFile, MetaXMLFile
+from dataformat.xml_file import XMLFile, MetaXMLFile, NullFile
 from dataformat.attachments import AttachmentCollection
 
 
@@ -12,11 +12,10 @@ class DataPackage(object):
 
     @classmethod
     def open(cls, path, readonly=False, meta=True, store=True, attach=True):
-        # TODO think about NullObj mainly to delete None
-        meta = MetaXMLFile.open(os.path.join(path, 'meta.xml'), readonly) if meta else None
-        store = XMLFile.open(os.path.join(path, 'store.xml'), readonly) if store else None
-        attach = AttachmentCollection.open(path, readonly) if attach else None
-        return cls(path, meta, store, attach)
+        meta_file = MetaXMLFile.open(os.path.join(path, 'meta.xml'), readonly) if meta else NullFile('MetaXMLFile')
+        store_file = XMLFile.open(os.path.join(path, 'store.xml'), readonly) if store else NullFile('XMLFile')
+        attach_col = AttachmentCollection.open(path, readonly) if attach else NullFile('AttachmentCollection')
+        return cls(path, meta_file, store_file, attach_col)
 
     @classmethod
     def create(cls, path):
