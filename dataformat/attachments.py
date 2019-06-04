@@ -78,16 +78,16 @@ class AttachmentCollection(object):
             return re.sub(r'[-\s]+', '--', value)
 
         new_uuid = str(uuid4())
-        new_dir = os.path.join(self.path, type.value, slugify(origin))
+        new_dir = os.path.join(self.ATTCH_DIR, type.value, slugify(origin))
         new_path = os.path.join(new_dir, new_uuid)
 
         new_att = Attachment(origin, type.value, new_path, new_uuid)
         self.collection.append(new_att)
 
         if type == self.Types.DIRECTORY:
-            os.makedirs(new_path)
+            os.makedirs(os.path.join(self.path, new_path))
         else:
-            os.makedirs(new_dir)
+            os.makedirs(os.path.join(self.path, new_dir))
 
         return new_att
 
