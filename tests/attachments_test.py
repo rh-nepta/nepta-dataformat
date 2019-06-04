@@ -58,12 +58,12 @@ class AttachmentCollectionTest(TestCase):
         self.assertTrue(os.path.exists(os.path.join(self.NEW, 'attachments.xml')))
 
         att1 = ac.new(ac.Types.FILE, '/etc/krb5.conf')
-        with open(att1.path, 'w') as f:
+        with open(os.path.join(self.NEW, att1.path), 'w') as f:
             f.write("sadljfhsaldjfhsadlkjfh")
         att2 = ac.new(ac.Types.DIRECTORY, '/etc/')
 
-        self.assertTrue(os.path.exists(att1.path))
-        self.assertTrue(os.path.exists(att2.path))
+        self.assertTrue(os.path.exists(os.path.join(self.NEW, att1.path)))
+        self.assertTrue(os.path.exists(os.path.join(self.NEW, att2.path)))
         self.assertNotEqual(att1.uuid, att2.uuid)
 
         ac.save()
@@ -73,7 +73,7 @@ class AttachmentCollectionTest(TestCase):
         self.assertEqual(len(ac), len(ac_check))
 
         for att in ac_check:
-            self.assertTrue(os.path.exists(att.path))
+            self.assertTrue(os.path.exists(os.path.join(self.NEW, att.path)))
 
         self.assertEqual(ac_check.collection[0], att1)
         self.assertEqual(ac_check.collection[1], att2)
