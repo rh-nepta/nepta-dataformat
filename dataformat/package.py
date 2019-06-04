@@ -8,7 +8,11 @@ class DataPackage(object):
 
     @classmethod
     def is_package(cls, path):
-        raise NotImplemented  # TODO
+        return (os.path.exists(path) and
+                os.path.exists(os.path.join(path, 'meta.xml')) and
+                os.path.exists(os.path.join(path, 'store.xml')) and
+                os.path.exists(os.path.join(path, 'attachments.xml')) and
+                os.path.exists(os.path.join(path, 'attachments')))
 
     @classmethod
     def open(cls, path, readonly=False, meta=True, store=True, attach=True):
