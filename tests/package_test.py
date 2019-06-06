@@ -2,10 +2,11 @@ import shutil
 import os
 from unittest import TestCase
 
-from dataformat.package import DataPackage
+
+from dataformat import DataPackage, AttachmentTypes
+
 from dataformat.xml_file import XMLFile, MetaXMLFile
 from dataformat.section import Section
-from dataformat.attachments import AttachmentCollection as AttCol
 
 
 class BasicPackageTests(TestCase):
@@ -41,11 +42,11 @@ class BasicPackageTests(TestCase):
     def test_open(self):
         p = DataPackage.open(self.OPEN_PATH)
         self.assertIsInstance(p, DataPackage)
-        self.assertIsInstance(p.meta, MetaXMLFile)
+        self.assertIsInstance(p.metas, MetaXMLFile)
         self.assertIsInstance(p.store, XMLFile)
 
-        self.assertEqual(p.meta['Family'], 'RHEL7')
-        self.assertEqual(p.meta['SpecificTag'], 'Testing jobcreator')
+        self.assertEqual(p.metas['Family'], 'RHEL7')
+        self.assertEqual(p.metas['SpecificTag'], 'Testing jobcreator')
 
         root = p.store.root
         self.assertEqual(root.name, 'breakfast_menu')
@@ -55,8 +56,8 @@ class BasicPackageTests(TestCase):
         self.assertEqual(len(food1.subsections.filter('calories')), 1)
         self.assertEqual(len(food1.subsections.filter('description')), 1)
 
-        p.meta['Family'] = 'CentOS7'
-        p.meta['SpecificTag'] = '#TAG'
+        p.metas['Family'] = 'CentOS7'
+        p.metas['SpecificTag'] = '#TAG'
 
         new_food = Section('food', hashtag='#tag')
         new_food.subsections.append(Section('name', value='Junky food'))
@@ -66,11 +67,11 @@ class BasicPackageTests(TestCase):
         num_of_foods = len(p.store.root.subsections)
         p.store.root.subsections.append(new_food)
 
-        num_of_attach = len(p.attch)
-        attch1 = p.attch.new(AttCol.Types.FILE, 'cat ~/.bashrc')
+        num_of_attach = len(p.attachments)
+        attch1 = p.attachments.new(AttachmentTypes.FILE, 'cat ~/.bashrc')
         with open(os.path.join(self.OPEN_PATH, attch1.path), 'w') as f:
             f.write('asdfasdf')
-        attch2 = p.attch.new(AttCol.Types.DIRECTORY, '/var/log/')
+        attch2 = p.attachments.new(AttachmentTypes.DIRECTORY, '/var/log/')
 
         p.close()
         del p
@@ -79,11 +80,11 @@ class BasicPackageTests(TestCase):
 
         p1 = DataPackage.open(self.OPEN_PATH)
         self.assertIsInstance(p1, DataPackage)
-        self.assertIsInstance(p1.meta, MetaXMLFile)
+        self.assertIsInstance(p1.metas, MetaXMLFile)
         self.assertIsInstance(p1.store, XMLFile)
 
-        self.assertEqual(p1.meta['Family'], 'CentOS7')
-        self.assertEqual(p1.meta['SpecificTag'], '#TAG')
+        self.assertEqual(p1.metas['Family'], 'CentOS7')
+        self.assertEqual(p1.metas['SpecificTag'], '#TAG')
 
         root = p1.store.root
         self.assertEqual(len(root.subsections), num_of_foods + 1)
@@ -106,8 +107,8 @@ class BasicPackageTests(TestCase):
         self.assertEqual(len(my_food.subsections.filter('description')), 1)
         self.assertEqual(my_food.subsections.filter('description')[0].params['value'], 'asdf;lkjasdf;lkj')
 
-        self.assertEqual(num_of_attach + 2, len(p1.attch))
-        for attch in p1.attch:
+        self.assertEqual(num_of_attach + 2, len(p1.attachments))
+        for attch in p1.attachments:
             self.assertTrue(os.path.exists(os.path.join(self.OPEN_PATH, attch.path)))
 
         p1.close()
@@ -115,11 +116,11 @@ class BasicPackageTests(TestCase):
     def test_open_with(self):
         with DataPackage.open(self.OPEN_PATH) as p:
             self.assertIsInstance(p, DataPackage)
-            self.assertIsInstance(p.meta, MetaXMLFile)
+            self.assertIsInstance(p.metas, MetaXMLFile)
             self.assertIsInstance(p.store, XMLFile)
 
-            self.assertEqual(p.meta['Family'], 'RHEL7')
-            self.assertEqual(p.meta['SpecificTag'], 'Testing jobcreator')
+            self.assertEqual(p.metas['Family'], 'RHEL7')
+            self.assertEqual(p.metas['SpecificTag'], 'Testing jobcreator')
 
             root = p.store.root
             self.assertEqual(root.name, 'breakfast_menu')
@@ -129,8 +130,8 @@ class BasicPackageTests(TestCase):
             self.assertEqual(len(food1.subsections.filter('calories')), 1)
             self.assertEqual(len(food1.subsections.filter('description')), 1)
 
-            p.meta['Family'] = 'CentOS7'
-            p.meta['SpecificTag'] = '#TAG'
+            p.metas['Family'] = 'CentOS7'
+            p.metas['SpecificTag'] = '#TAG'
 
             new_food = Section('food', hashtag='#tag')
             new_food.subsections.append(Section('name', value='Junky food'))
@@ -140,21 +141,21 @@ class BasicPackageTests(TestCase):
             num_of_foods = len(p.store.root.subsections)
             p.store.root.subsections.append(new_food)
 
-            num_of_attach = len(p.attch)
-            attch1 = p.attch.new(AttCol.Types.FILE, 'cat ~/.bashrc')
+            num_of_attach = len(p.attachments)
+            attch1 = p.attachments.new(AttachmentTypes.FILE, 'cat ~/.bashrc')
             with open(os.path.join(self.OPEN_PATH, attch1.path), 'w') as f:
                 f.write('asdfasdf')
-            attch2 = p.attch.new(AttCol.Types.DIRECTORY, '/var/log/')
+            attch2 = p.attachments.new(AttachmentTypes.DIRECTORY, '/var/log/')
 
         del p
 
         with DataPackage.open(self.OPEN_PATH) as p1:
             self.assertIsInstance(p1, DataPackage)
-            self.assertIsInstance(p1.meta, MetaXMLFile)
+            self.assertIsInstance(p1.metas, MetaXMLFile)
             self.assertIsInstance(p1.store, XMLFile)
 
-            self.assertEqual(p1.meta['Family'], 'CentOS7')
-            self.assertEqual(p1.meta['SpecificTag'], '#TAG')
+            self.assertEqual(p1.metas['Family'], 'CentOS7')
+            self.assertEqual(p1.metas['SpecificTag'], '#TAG')
 
             root = p1.store.root
             self.assertEqual(len(root.subsections), num_of_foods + 1)
@@ -177,8 +178,8 @@ class BasicPackageTests(TestCase):
             self.assertEqual(len(my_food.subsections.filter('description')), 1)
             self.assertEqual(my_food.subsections.filter('description')[0].params['value'], 'asdf;lkjasdf;lkj')
 
-            self.assertEqual(num_of_attach + 2, len(p1.attch))
-            for attch in p1.attch:
+            self.assertEqual(num_of_attach + 2, len(p1.attachments))
+            for attch in p1.attachments:
                 self.assertTrue(os.path.exists(os.path.join(self.OPEN_PATH, attch.path)))
 
     def test_is_package(self):
@@ -194,5 +195,9 @@ class BasicPackageTests(TestCase):
         self.assertTrue(DataPackage.is_package(self.CREATE_PATH2))
         self.assertFalse(DataPackage.is_package(os.path.join(self.CREATE_PATH2, os.pardir)))
 
+    def test_meta_only(self):
+        with DataPackage.open(self.OPEN_PATH, True, True, False, False) as p:
+            print(p.metas['Family'])
 
-
+    def test_ro(self):
+        raise NotImplementedError

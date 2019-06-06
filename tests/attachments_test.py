@@ -5,6 +5,7 @@ from collections import defaultdict
 
 from dataformat.attachments import AttachmentCollection
 from dataformat.exceptions import DataFormatReadOnlyException
+from dataformat import AttachmentTypes
 
 
 class AttachmentCollectionTest(TestCase):
@@ -45,7 +46,7 @@ class AttachmentCollectionTest(TestCase):
 
         counter = defaultdict(int)
         for att in ac:
-            counter[att.name] += 1
+            counter[att.name.value] += 1
 
         self.assertEqual(counter['Command'], 3)
         self.assertEqual(counter['Directory'], 1)
@@ -57,10 +58,10 @@ class AttachmentCollectionTest(TestCase):
         self.assertTrue(os.path.exists(os.path.join(self.NEW, 'attachments')))
         self.assertTrue(os.path.exists(os.path.join(self.NEW, 'attachments.xml')))
 
-        att1 = ac.new(ac.Types.FILE, '/etc/krb5.conf')
+        att1 = ac.new(AttachmentTypes.FILE, '/etc/krb5.conf')
         with open(os.path.join(self.NEW, att1.path), 'w') as f:
             f.write("sadljfhsaldjfhsadlkjfh")
-        att2 = ac.new(ac.Types.DIRECTORY, '/etc/')
+        att2 = ac.new(AttachmentTypes.DIRECTORY, '/etc/')
 
         self.assertTrue(os.path.exists(os.path.join(self.NEW, att1.path)))
         self.assertTrue(os.path.exists(os.path.join(self.NEW, att2.path)))
@@ -81,7 +82,7 @@ class AttachmentCollectionTest(TestCase):
     def test_readonly(self):
         ac = AttachmentCollection.open(self.EXIST, readonly=True)
         self.assertRaises(
-            DataFormatReadOnlyException, AttachmentCollection.new, ac, AttachmentCollection.Types.DIRECTORY, '/')
+            DataFormatReadOnlyException, AttachmentCollection.new, ac, AttachmentTypes.DIRECTORY, '/')
         self.assertRaises(DataFormatReadOnlyException, AttachmentCollection.save, ac)
         self.assertRaises(DataFormatReadOnlyException, setattr, ac, 'path', 'asdf')
 

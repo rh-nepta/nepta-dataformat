@@ -210,13 +210,13 @@ class NullFileTest(TestCase):
         p = DataPackage.open('asdf', False, False, False, False)
 
         # meta
-        self.assertRaises(DataFormatNullFile, operator.getitem, p.meta, 'Family')
-        self.assertRaises(DataFormatNullFile, operator.setitem, p.meta, 'Version', '0.2')
+        self.assertRaises(DataFormatNullFile, operator.getitem, p.metas, 'Family')
+        self.assertRaises(DataFormatNullFile, operator.setitem, p.metas, 'Version', '0.2')
 
         # store
         self.assertRaises(DataFormatNullFile, setattr, p.store, 'root', Section('asdf'))
         self.assertRaises(DataFormatNullFile, getattr, p.store, 'path')
 
         # attch
-        self.assertRaises(DataFormatNullFile, len, p.attch)
-        self.assertRaises(DataFormatNullFile, iter, p.attch)
+        self.assertRaises(DataFormatNullFile, len, p.attachments)
+        self.assertRaises(DataFormatNullFile, iter, p.attachments)
