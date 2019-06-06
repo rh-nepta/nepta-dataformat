@@ -72,13 +72,15 @@ class AttachmentCollection(object):
             self.att_meta.root.subsections.append(Section(self.ELEM_NAME, dict(att.__dict__)))
         self.att_meta.save()
 
+    @staticmethod
+    def slugify(name):
+        value = re.sub(r'[^\w\s-]', '-', name).strip().lower()
+        return re.sub(r'[-\s]+', '--', value)
+
     def new(self, type, origin):
-        def slugify(name):
-            value = re.sub(r'[^\w\s-]', '-', name).strip().lower()
-            return re.sub(r'[-\s]+', '--', value)
 
         new_uuid = str(uuid4())
-        new_dir = os.path.join(self.ATTCH_DIR, type.value, slugify(origin))
+        new_dir = os.path.join(self.ATTCH_DIR, type.value, self.slugify(origin))
         new_path = os.path.join(new_dir, new_uuid)
 
         new_att = Attachment(origin, type.value, new_path, new_uuid)
