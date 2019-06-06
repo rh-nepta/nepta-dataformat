@@ -4,7 +4,7 @@ from unittest import TestCase
 from collections import defaultdict
 
 from dataformat.attachments import AttachmentCollection
-from dataformat.exceptions import DataFormatReadOnlyException
+from dataformat.exceptions import DataFormatReadOnlyException, DataFormatDuplicateKey
 from dataformat import AttachmentTypes
 
 
@@ -21,16 +21,15 @@ class AttachmentCollectionTest(TestCase):
         os.mkdir(cls.TEST_DIR)
         os.mkdir(cls.NEW)
 
-    @classmethod
-    def setUp(cls):
-        os.mkdir(cls.EXIST)
+    def setUp(self):
+        os.mkdir(self.EXIST)
         shutil.copy(
-            os.path.join(cls.EXAMPLE_DIR, 'attch.xml'),
-            os.path.join(cls.EXIST, 'attachments.xml')
+            os.path.join(self.EXAMPLE_DIR, 'attch.xml'),
+            os.path.join(self.EXIST, 'attachments.xml')
         )
         shutil.copytree(
-            os.path.join(cls.EXAMPLE_DIR, 'attachments'),
-            os.path.join(cls.EXIST, 'attachments')
+            os.path.join(self.EXAMPLE_DIR, 'attachments'),
+            os.path.join(self.EXIST, 'attachments')
         )
 
     def tearDown(self):
@@ -46,7 +45,7 @@ class AttachmentCollectionTest(TestCase):
 
         counter = defaultdict(int)
         for att in ac:
-            counter[att.name.value] += 1
+            counter[att.name] += 1
 
         self.assertEqual(counter['Command'], 3)
         self.assertEqual(counter['Directory'], 1)
@@ -88,4 +87,21 @@ class AttachmentCollectionTest(TestCase):
 
         for attch in ac:
             self.assertRaises(Exception, setattr, attch, 'name', 'asdf')
+
+    def test_alias(self):
+        ac = AttachmentCollection.open(self.EXIST)
+        ac.new(AttachmentTypes.DIRECTORY, '/root/')
+        att2 = ac.new(AttachmentTypes.DIRECTORY, '/etc/sysconfig', 'net')
+        att3 = ac.new(AttachmentTypes.DIRECTORY, '/etc/cert', 'cert')
+
+        ac.save()
+
+        del ac
+
+        ac1 = AttachmentCollection.open(self.EXIST)
+
+        self.assertEqual(att2, ac1['net'])
+        self.assertEqual(att3, ac1['cert'])
+
+        self.assertRaises(DataFormatDuplicateKey, ac1.new, AttachmentTypes.FILE, 'asdf', 'net')
 
