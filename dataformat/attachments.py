@@ -10,14 +10,12 @@ from dataformat.section import Section
 from dataformat.decorators import readonly_check_methods
 
 
-@readonly_check_methods('__setattr__')
-@dataclass
+@dataclass(frozen=True)
 class Attachment:
     origin: str
-    name: str
+    name: Types  # backward compatibility with libres, this attr specify type
     path: str
     uuid: str
-    readonly: bool = False
 
 
 @readonly_check_methods('new', 'save', '__setattr__')
