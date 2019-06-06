@@ -8,11 +8,8 @@ class DataPackage(object):
 
     @classmethod
     def is_package(cls, path):
-        return (os.path.exists(path) and
-                os.path.exists(os.path.join(path, 'meta.xml')) and
-                os.path.exists(os.path.join(path, 'store.xml')) and
-                os.path.exists(os.path.join(path, 'attachments.xml')) and
-                os.path.exists(os.path.join(path, 'attachments')))
+        checked_files = ['meta.xml', 'store.xml', 'attachments.xml', 'attachments']
+        return all([os.path.exists(os.path.join(path, file)) for file in checked_files])
 
     @classmethod
     def open(cls, path, readonly=False, meta=True, store=True, attach=True):
