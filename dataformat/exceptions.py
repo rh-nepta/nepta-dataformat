@@ -16,3 +16,11 @@ class DataFormatReadOnlyException(BaseDataFormatException):
 
 class DataFormatNullFile(BaseDataFormatException):
     pass
+
+
+class DataFormatDuplicateKey(BaseDataFormatException):
+    pass
+
+
+class DataFormatBadType(BaseDataFormatException):
+    pass

@@ -13,6 +13,7 @@ class DataPackage(object):
 
     @classmethod
     def open(cls, path, readonly=False, meta=True, store=True, attachments=True):
+        # TODO : better methods argument
         meta_file = MetaXMLFile.open(os.path.join(path, 'meta.xml'), readonly) if meta else NullFile('MetaXMLFile')
         store_file = XMLFile.open(os.path.join(path, 'store.xml'), readonly) if store else NullFile('XMLFile')
         attach_col = AttachmentCollection.open(path, readonly) if attachments else NullFile('AttachmentCollection')
