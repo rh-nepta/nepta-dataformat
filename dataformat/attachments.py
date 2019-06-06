@@ -37,7 +37,7 @@ class AttachmentCollection(object):
 
     @classmethod
     def open(cls, path, readonly=False):
-        att_meta = XMLFile.open(os.path.join(path, cls.META_FILE))
+        attachment_metas = XMLFile.open(os.path.join(path, cls.META_FILE))
         collection = []
 
         for attachment in attachment_metas.root:
@@ -45,7 +45,7 @@ class AttachmentCollection(object):
                 Attachment(attachment.params['origin'], Types(attachment.params['name']), attachment.params['path'],
                            attachment.params['uuid']))
 
-        return cls(path, att_meta, collection, readonly)
+        return cls(path, attachment_metas, collection, readonly)
 
     @classmethod
     def create(cls, path):
