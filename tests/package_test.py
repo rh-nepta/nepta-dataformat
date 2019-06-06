@@ -7,6 +7,7 @@ from dataformat import DataPackage, AttachmentTypes
 
 from dataformat.xml_file import XMLFile, MetaXMLFile
 from dataformat.section import Section
+from dataformat.exceptions import DataFormatReadOnlyException
 
 
 class BasicPackageTests(TestCase):
@@ -200,4 +201,10 @@ class BasicPackageTests(TestCase):
             print(p.metas['Family'])
 
     def test_ro(self):
-        raise NotImplementedError
+        p = DataPackage.open(self.OPEN_PATH, True)
+        self.assertRaises(DataFormatReadOnlyException, p.__setattr__, 'store', None)
+        # test if readonly is propagated
+        self.assertRaises(DataFormatReadOnlyException, p.metas.__setitem__, p.metas, 'Family', 'No')
+        self.assertRaises(DataFormatReadOnlyException, p.store.save)
+        self.assertRaises(DataFormatReadOnlyException, p.attachments.new, AttachmentTypes.DIRECTORY, 'cat .')
+        p.close()
