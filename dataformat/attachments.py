@@ -10,6 +10,16 @@ from dataformat.section import Section
 from dataformat.decorators import readonly_check_methods
 
 
+class Types(Enum):
+    FILE = 'File'
+    DIRECTORY = 'Directory'
+    COMMAND = 'Command'
+    URL = 'Url'
+
+    def __str__(self):
+        return self.value
+
+
 @dataclass(frozen=True)
 class Attachment:
     origin: str
@@ -25,20 +35,15 @@ class AttachmentCollection(object):
     ELEM_NAME = 'attachment'
     ROOT_NAME = 'attachments'
 
-    class Types(Enum):
-        FILE = 'File'
-        DIRECTORY = 'Directory'
-        COMMAND = 'Command'
-        URL = 'Url'
-
     @classmethod
     def open(cls, path, readonly=False):
         att_meta = XMLFile.open(os.path.join(path, cls.META_FILE))
         collection = []
 
-        for attach in att_meta.root:
-            collection.append(Attachment(attach.params['origin'], attach.params['name'], attach.params['path'],
-                                         attach.params['uuid'], readonly))
+        for attachment in attachment_metas.root:
+            collection.append(
+                Attachment(attachment.params['origin'], Types(attachment.params['name']), attachment.params['path'],
+                           attachment.params['uuid']))
 
         return cls(path, att_meta, collection, readonly)
 
@@ -81,10 +86,10 @@ class AttachmentCollection(object):
         new_dir = os.path.join(self.ATTCH_DIR, type.value, self.slugify(origin))
         new_path = os.path.join(new_dir, new_uuid)
 
-        new_att = Attachment(origin, type.value, new_path, new_uuid)
+        new_att = Attachment(origin, type, new_path, new_uuid)
         self.collection.append(new_att)
 
-        if type == self.Types.DIRECTORY:
+        if type == Types.DIRECTORY:
             os.makedirs(os.path.join(self.path, new_path))
         else:
             os.makedirs(os.path.join(self.path, new_dir))
