@@ -5,15 +5,16 @@ from xml.dom import minidom
 
 from dataformat.section import Section
 from dataformat.exceptions import DataFormatFileNotFound, DataFormatFileExists, DataFormatNullFile
-from dataformat.decorators import readonly_check
+from dataformat.decorators import readonly_check_methods
 
 
+@readonly_check_methods('__setattr__', 'save')
 class XMLFile(object):
 
     def __init__(self, path, root_section=None, readonly=False):
         self.path = path
-        self._root = Section('root') if not root_section else root_section
-        self.readonly = readonly
+        self.root = Section('root') if not root_section else root_section
+        self._readonly = readonly
 
     @classmethod
     def open(cls, path, readonly=False):
@@ -31,15 +32,9 @@ class XMLFile(object):
         return cls(path)
 
     @property
-    def root(self):
-        return self._root
+    def readonly(self):
+        return self._readonly
 
-    @root.setter
-    @readonly_check
-    def root(self, value):
-        self._root = value
-
-    @readonly_check
     def save(self):
         self._save()
 
@@ -58,10 +53,9 @@ class XMLFile(object):
 
         tree = ET.parse(self.path)
         root = tree.getroot()
-        self._root = load_sections(root)
+        self.__dict__['root'] = load_sections(root)
         return self
 
-    @readonly_check
     def _save(self):
         def save_sections(sec):
             el = ET.Element(sec.name)
@@ -81,6 +75,7 @@ class XMLFile(object):
         xml_file.close()
 
 
+@readonly_check_methods('save', '__setitem__')
 class MetaXMLFile(object):
 
     @classmethod
@@ -102,21 +97,19 @@ class MetaXMLFile(object):
         self._xml_file = xml_file
         self._meta_section_ptr = meta_section
         self._val_dict = {}
-        self.readonly = readonly
+        self._readonly = readonly
         for sec in meta_section:
             if 'value' in sec.params:
                 self._val_dict[sec.name] = sec.params['value']
             elif 'type' in sec.params and sec.params['type'] == 'list':
                 self._val_dict[sec.name] = [sec.params['value'] for sec in sec.subsections]
 
-    @readonly_check
     def save(self):
         self._meta_section_ptr.delete_subsections()
         for k, v in self._val_dict.items():
             self._meta_section_ptr.subsections.append(Section(k, value=v))
         self._xml_file.save()
 
-    @readonly_check
     def __setitem__(self, key, value):
         self._val_dict[key] = value
 
@@ -127,7 +120,7 @@ class MetaXMLFile(object):
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        if not self.readonly:
+        if not self._readonly:
             self.save()
 
 
