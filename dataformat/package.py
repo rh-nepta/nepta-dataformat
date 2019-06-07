@@ -2,8 +2,10 @@ import os
 
 from dataformat.xml_file import XMLFile, MetaXMLFile, NullFile
 from dataformat.attachments import AttachmentCollection
+from dataformat.decorators import readonly_check_methods
 
 
+@readonly_check_methods('__setattr__')
 class DataPackage(object):
 
     @classmethod
