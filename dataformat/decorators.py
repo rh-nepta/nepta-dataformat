@@ -9,7 +9,7 @@ def readonly_check(arg1=None):
 
     :param arg1: decorated method or which attribute to check
     """
-    attr = 'readonly'
+    attr = '_readonly'
 
     def wrap(func):
         @wraps(func)

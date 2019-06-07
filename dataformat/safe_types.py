@@ -9,7 +9,7 @@ from dataformat.decorators import readonly_check_methods
 class DataFormatOrderedDict(OrderedDict):
 
     def __init__(self, *args, **kwargs):
-        self.readonly = False
+        self._readonly = False
         super().__init__(*args, **kwargs)
 
 
@@ -20,5 +20,5 @@ class DataFormatOrderedDict(OrderedDict):
 class DataFormatList(list):
 
     def __init__(self, *args, **kwargs):
-        self.readonly = False
+        self._readonly = False
         super().__init__(*args, **kwargs)

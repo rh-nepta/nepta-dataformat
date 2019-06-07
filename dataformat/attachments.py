@@ -59,7 +59,7 @@ class AttachmentCollection(object):
         self.att_meta = att_meta
         self.collection = collection
         self.alias_map = alias_map
-        self.readonly = readonly
+        self._readonly = readonly
 
     def __str__(self):
         return "{}: {}\n\t{}".format(self.__class__.__name__, self.path, "\n\t".join(map(str, self.collection)))
