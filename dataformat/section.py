@@ -1,4 +1,4 @@
-from dataformat.decorators import readonly_check, readonly_check_methods
+from dataformat.decorators import readonly_check_methods
 from dataformat.safe_types import DataFormatOrderedDict, DataFormatList
 
 
@@ -27,7 +27,7 @@ class Section(object):
     @readonly.setter
     def readonly(self, val):
         self._readonly = val
-        self.params.readonly = val
+        self.params._readonly = val
         self.subsections.readonly = val
 
     def delete_subsections(self):
@@ -60,7 +60,7 @@ class SectionCollection(object):
     @readonly.setter
     def readonly(self, val):
         self._readonly = val
-        self.sections.readonly = val
+        self.sections._readonly = val
 
     def filter(self, name=None, **params):
         ret = SectionCollection()
