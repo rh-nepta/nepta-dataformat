@@ -1,8 +1,17 @@
 import os
+from enum import Flag, auto
 
 from dataformat.xml_file import XMLFile, MetaXMLFile, NullFile
 from dataformat.attachments import AttachmentCollection
 from dataformat.decorators import readonly_check_methods
+
+
+class FileFlags(Flag):
+    NONE = 0
+    META = auto()
+    STORE = auto()
+    ATTACHMENTS = auto()
+    ALL = META | STORE | ATTACHMENTS
 
 
 @readonly_check_methods('__setattr__')
@@ -14,11 +23,10 @@ class DataPackage(object):
         return all([os.path.exists(os.path.join(path, file)) for file in checked_files])
 
     @classmethod
-    def open(cls, path, readonly=False, meta=True, store=True, attachments=True):
-        # TODO : better methods argument
-        meta_file = MetaXMLFile.open(os.path.join(path, 'meta.xml'), readonly) if meta else NullFile('MetaXMLFile')
-        store_file = XMLFile.open(os.path.join(path, 'store.xml'), readonly) if store else NullFile('XMLFile')
-        attach_col = AttachmentCollection.open(path, readonly) if attachments else NullFile('AttachmentCollection')
+    def open(cls, path, file_opts=FileFlags.ALL, readonly=False):
+        meta_file = MetaXMLFile.open(os.path.join(path, 'meta.xml'), readonly) if file_opts & FileFlags.META else NullFile('MetaXMLFile')
+        store_file = XMLFile.open(os.path.join(path, 'store.xml'), readonly) if file_opts & FileFlags.STORE else NullFile('XMLFile')
+        attach_col = AttachmentCollection.open(path, readonly) if file_opts & FileFlags.ATTACHMENTS else NullFile('AttachmentCollection')
         return cls(path, meta_file, store_file, attach_col, readonly)
 
     @classmethod
