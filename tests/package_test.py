@@ -3,9 +3,9 @@ import os
 from unittest import TestCase
 
 
-from dataformat import DataPackage, AttachmentTypes
+from dataformat import DataPackage, AttachmentTypes, FileFlags
 
-from dataformat.xml_file import XMLFile, MetaXMLFile
+from dataformat.xml_file import XMLFile, MetaXMLFile, NullFile
 from dataformat.section import Section
 from dataformat.exceptions import DataFormatReadOnlyException
 
@@ -197,11 +197,13 @@ class BasicPackageTests(TestCase):
         self.assertFalse(DataPackage.is_package(os.path.join(self.CREATE_PATH2, os.pardir)))
 
     def test_meta_only(self):
-        with DataPackage.open(self.OPEN_PATH, True, True, False, False) as p:
-            print(p.metas['Family'])
+        with DataPackage.open(self.OPEN_PATH, FileFlags.META, readonly=True) as p:
+            self.assertIsInstance(p.metas, MetaXMLFile)
+            self.assertIsInstance(p.store, NullFile)
+            self.assertIsInstance(p.attachments, NullFile)
 
     def test_ro(self):
-        p = DataPackage.open(self.OPEN_PATH, True)
+        p = DataPackage.open(self.OPEN_PATH, readonly=True)
         self.assertRaises(DataFormatReadOnlyException, p.__setattr__, 'store', None)
         # test if readonly is propagated
         self.assertRaises(DataFormatReadOnlyException, p.metas.__setitem__, p.metas, 'Family', 'No')

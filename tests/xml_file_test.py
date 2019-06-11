@@ -2,7 +2,7 @@ import shutil
 import os
 import operator
 
-from dataformat.package import DataPackage
+from dataformat import DataPackage, FileFlags
 from dataformat.section import Section, SectionCollection
 from dataformat.xml_file import XMLFile, MetaXMLFile
 from dataformat.exceptions import DataFormatFileNotFound, DataFormatReadOnlyException, DataFormatFileExists, \
@@ -207,7 +207,7 @@ class MetaXMLFileTest(TestCase):
 class NullFileTest(TestCase):
 
     def test_raise(self):
-        p = DataPackage.open('asdf', False, False, False, False)
+        p = DataPackage.open('asdf', FileFlags.NONE)
 
         # meta
         self.assertRaises(DataFormatNullFile, operator.getitem, p.metas, 'Family')
