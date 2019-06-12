@@ -127,20 +127,20 @@ class MetaXMLFile(object):
 class NullFile(object):
     # TODO think about better solution of this
 
-    def __init__(self, name='Null'):
-        self.name = name
+    def __init__(self, path, *args):
+        self.file = path
 
     def throw(self):
-        raise DataFormatNullFile('{} is not opened. Operation is not permitted!!!'.format(self.name))
+        raise DataFormatNullFile(f'{self.file} is not opened. Operation is not permitted!!!')
 
     def __getattr__(self, item):
-        if item in ['throw', 'name']:
+        if item in ['throw', 'file']:
             return super().__getattribute__(item)
         else:
             self.throw()
 
     def __setattr__(self, item, val):
-        if item in ['throw', 'name']:
+        if item in ['throw', 'file']:
             return super().__setattr__(item, val)
         else:
             self.throw()
