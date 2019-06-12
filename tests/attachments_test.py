@@ -59,7 +59,7 @@ class AttachmentCollectionTest(TestCase):
 
         att1 = ac.new(AttachmentTypes.FILE, '/etc/krb5.conf')
         with open(os.path.join(self.NEW, att1.path), 'w') as f:
-            f.write("sadljfhsaldjfhsadlkjfh")
+            f.write('sadljfhsaldjfhsadlkjfh')
         att2 = ac.new(AttachmentTypes.DIRECTORY, '/etc/')
 
         self.assertTrue(os.path.exists(os.path.join(self.NEW, att1.path)))

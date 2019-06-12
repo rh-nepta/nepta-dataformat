@@ -34,6 +34,8 @@ class AttachmentCollection(object):
     ELEM_NAME = 'attachment'
     ROOT_NAME = 'attachments'
 
+    SPACE = '\n\t'
+
     @classmethod
     def open(cls, path, readonly=False):
         attachment_metas = XMLFile.open(os.path.join(path, cls.META_FILE))
@@ -62,7 +64,7 @@ class AttachmentCollection(object):
         self._readonly = readonly
 
     def __str__(self):
-        return "{}: {}\n\t{}".format(self.__class__.__name__, self.path, "\n\t".join(map(str, self.collection)))
+        return f'{self.__class__.__name__}: {self.path}{self.SPACE}{self.SPACE.join(map(str, self.collection))}'
 
     def __iter__(self):
         return iter(self.collection)
