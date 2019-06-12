@@ -1,5 +1,6 @@
 import os
 from enum import Flag, auto
+from collections import defaultdict
 
 from dataformat.xml_file import XMLFile, MetaXMLFile, NullFile
 from dataformat.attachments import AttachmentCollection
@@ -16,6 +17,11 @@ class FileFlags(Flag):
 
 @readonly_check_methods('__setattr__')
 class DataPackage(object):
+    _FILE_CONSTRUCT_MAP = defaultdict(lambda: NullFile, {
+        FileFlags.META: MetaXMLFile.open,
+        FileFlags.STORE: XMLFile.open,
+        FileFlags.ATTACHMENTS: AttachmentCollection.open,
+    })
 
     @classmethod
     def is_package(cls, path):
@@ -24,9 +30,9 @@ class DataPackage(object):
 
     @classmethod
     def open(cls, path, file_opts=FileFlags.ALL, readonly=False):
-        meta_file = MetaXMLFile.open(os.path.join(path, 'meta.xml'), readonly) if file_opts & FileFlags.META else NullFile('MetaXMLFile')
-        store_file = XMLFile.open(os.path.join(path, 'store.xml'), readonly) if file_opts & FileFlags.STORE else NullFile('XMLFile')
-        attach_col = AttachmentCollection.open(path, readonly) if file_opts & FileFlags.ATTACHMENTS else NullFile('AttachmentCollection')
+        meta_file = cls._FILE_CONSTRUCT_MAP[file_opts & FileFlags.META](os.path.join(path, 'meta.xml'), readonly)
+        store_file = cls._FILE_CONSTRUCT_MAP[file_opts & FileFlags.STORE](os.path.join(path, 'store.xml'), readonly)
+        attach_col = cls._FILE_CONSTRUCT_MAP[file_opts & FileFlags.ATTACHMENTS](path, readonly)
         return cls(path, meta_file, store_file, attach_col, readonly)
 
     @classmethod
