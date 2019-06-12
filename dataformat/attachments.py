@@ -88,7 +88,7 @@ class AttachmentCollection(object):
         return re.sub(r'[-\s]+', '--', value)
 
     def new(self, type, origin, alias=None):
-        if alias in self.alias_map.keys():
+        if alias in self.alias_map:
             raise DataFormatDuplicateKey
         if type not in Types:
             raise DataFormatBadType

@@ -91,7 +91,7 @@ class AttachmentCollectionTest(TestCase):
     def test_alias(self):
         ac = AttachmentCollection.open(self.EXIST)
         ac.new(AttachmentTypes.DIRECTORY, '/root/')
-        att2 = ac.new(AttachmentTypes.DIRECTORY, '/etc/sysconfig', 'net')
+        att2 = ac.new(AttachmentTypes.DIRECTORY, '/etc/sysconfig', alias='net')
         att3 = ac.new(AttachmentTypes.DIRECTORY, '/etc/cert', 'cert')
 
         ac.save()
