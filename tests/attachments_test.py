@@ -4,7 +4,7 @@ from unittest import TestCase
 from collections import defaultdict
 
 from dataformat.attachments import AttachmentCollection
-from dataformat.exceptions import DataFormatReadOnlyException, DataFormatDuplicateKey
+from dataformat.exceptions import DataFormatReadOnlyException, DataFormatDuplicateKey, DataFormatBadType
 from dataformat import AttachmentTypes
 
 
@@ -61,6 +61,8 @@ class AttachmentCollectionTest(TestCase):
         with open(os.path.join(self.NEW, att1.path), 'w') as f:
             f.write('sadljfhsaldjfhsadlkjfh')
         att2 = ac.new(AttachmentTypes.DIRECTORY, '/etc/')
+
+        self.assertRaises(DataFormatBadType, ac.new, 'asdf', 'adf')
 
         self.assertTrue(os.path.exists(os.path.join(self.NEW, att1.path)))
         self.assertTrue(os.path.exists(os.path.join(self.NEW, att2.path)))

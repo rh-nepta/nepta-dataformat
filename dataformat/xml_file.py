@@ -134,10 +134,7 @@ class NullFile(object):
         raise DataFormatNullFile(f'{self.file} is not opened. Operation is not permitted!!!')
 
     def __getattr__(self, item):
-        if item in ['throw', 'file']:
-            return super().__getattribute__(item)
-        else:
-            self.throw()
+        self.throw()
 
     def __setattr__(self, item, val):
         if item in ['throw', 'file']:
