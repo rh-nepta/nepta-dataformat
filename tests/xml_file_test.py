@@ -1,10 +1,12 @@
 import shutil
 import os
+import operator
 
-from dataformat.package import DataPackage
+from dataformat import DataPackage, FileFlags
 from dataformat.section import Section, SectionCollection
 from dataformat.xml_file import XMLFile, MetaXMLFile
-from dataformat.exceptions import DataFormatFileNotFound, DataFormatReadOnlyException, DataFormatFileExists
+from dataformat.exceptions import DataFormatFileNotFound, DataFormatReadOnlyException, DataFormatFileExists, \
+    DataFormatNullFile
 from unittest import TestCase
 
 
@@ -51,12 +53,12 @@ class XMLFileTest(TestCase):
         xml = XMLFile.open(self.EXIST)
         self.assertEqual(xml.root.name, 'breakfast_menu')
         self.assertEqual(len(xml.root.subsections), 5)
-        xml.root.add_subsection(Section(sec_name, value='wwertret', value2='asdf2ew'))
+        xml.root.subsections.append(Section(sec_name, value='wwertret', value2='asdf2ew'))
         self.assertEqual(len(xml.root.subsections), 6)
         xml.save()
 
         xml2 = XMLFile.open(self.EXIST)
-        sec_list = xml2.root.get_subsections_by_name(sec_name)
+        sec_list = xml2.root.subsections.filter(sec_name)
         self.assertEqual(len(sec_list), 1)
 
     def test_create(self):
@@ -67,25 +69,25 @@ class XMLFileTest(TestCase):
         self.assertEqual(len(xml.root.subsections), 0)
 
         data_sec = Section('data', sum="123", weather='sunny')
-        xml.root.add_subsection(data_sec)
+        xml.root.subsections.append(data_sec)
 
-        data_sec.add_subsection(Section('avg_temp', number="15.5"))
-        data_sec.add_subsection(Section('max_temp', number="15.9"))
-        data_sec.add_subsection(Section('min_temp', number="15.2"))
-        data_sec.add_subsection(Section('test_temp', number="15.x"))
-        data_sec.add_subsection(Section('test_temp', number="15.x"))
-        data_sec.add_subsection(Section('test_temp', number="15.x"))
+        data_sec.subsections.append(Section('avg_temp', number="15.5"))
+        data_sec.subsections.append(Section('max_temp', number="15.9"))
+        data_sec.subsections.append(Section('min_temp', number="15.2"))
+        data_sec.subsections.append(Section('test_temp', number="15.x"))
+        data_sec.subsections.append(Section('test_temp', number="15.x"))
+        data_sec.subsections.append(Section('test_temp', number="15.x"))
         temps_sec = Section('temps')
-        data_sec.add_subsection(temps_sec)
+        data_sec.subsections.append(temps_sec)
         for i in range(20):
-            temps_sec.add_subsection(Section('temp', value=i))
+            temps_sec.subsections.append(Section('temp', value=i))
 
         xml.save()
         self.assertTrue(os.path.exists(self.NEW))
 
         xml_ver = XMLFile.open(self.NEW)
 
-        data_sec = xml_ver.root.get_subsections_by_name('data')[0]
+        data_sec = xml_ver.root.subsections.filter('data')[0]
         self.assertEqual(data_sec.params['sum'], '123')
         self.assertEqual(data_sec.params['weather'], 'sunny')
 
@@ -106,11 +108,11 @@ class XMLFileTest(TestCase):
         self.assertEqual(len(xml_ver2.root['data'][0]['temps'][0].subsections), 0)
 
         data_sec = xml_ver2.root['data'][0]
-        self.assertEqual(len(data_sec.get_subsections_by_param_val(number="15.9")), 1)
-        self.assertEqual(data_sec.get_subsections_by_param_val(number="15.9")[0].name, "max_temp")
+        self.assertEqual(len(data_sec.subsections.filter(number="15.9")), 1)
+        self.assertEqual(data_sec.subsections.filter(number="15.9")[0].name, "max_temp")
 
-        self.assertEqual(len(data_sec.get_subsections_by_param_val(number="15.x")), 3)
-        self.assertEqual(data_sec.get_subsections_by_param_val(number="15.x")[0].name, "test_temp")
+        self.assertEqual(len(data_sec.subsections.filter(number="15.x")), 3)
+        self.assertEqual(data_sec.subsections.filter(number="15.x")[0].name, "test_temp")
 
     def test_exceptions(self):
         self.assertRaises(DataFormatFileNotFound, XMLFile.open, 'asdfasdf')
@@ -197,9 +199,24 @@ class MetaXMLFileTest(TestCase):
             self.assertEqual(m2['BeakerJobID'], '3483869')
 
     def test_readonly(self):
-
         with MetaXMLFile.open(self.EXIST, readonly=True) as m1:
             self.assertRaises(DataFormatReadOnlyException, MetaXMLFile.save, m1)
             self.assertRaises(DataFormatReadOnlyException, MetaXMLFile.__setitem__, m1, 'asdf', 'asdf')
 
 
+class NullFileTest(TestCase):
+
+    def test_raise(self):
+        p = DataPackage.open('asdf', FileFlags.NONE)
+
+        # meta
+        self.assertRaises(DataFormatNullFile, operator.getitem, p.metas, 'Family')
+        self.assertRaises(DataFormatNullFile, operator.setitem, p.metas, 'Version', '0.2')
+
+        # store
+        self.assertRaises(DataFormatNullFile, setattr, p.store, 'root', Section('asdf'))
+        self.assertRaises(DataFormatNullFile, getattr, p.store, 'path')
+
+        # attch
+        self.assertRaises(DataFormatNullFile, len, p.attachments)
+        self.assertRaises(DataFormatNullFile, iter, p.attachments)

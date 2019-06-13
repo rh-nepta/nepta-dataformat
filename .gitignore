@@ -1,0 +1,10 @@
+venv
+
+*\.egg-info/
+*\.egg
+MANIFEST
+
+# Python3 cache files
+__pycache__/
+
+\.coverage.*

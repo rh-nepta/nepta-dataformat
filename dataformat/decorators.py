@@ -1,31 +1,41 @@
 from functools import wraps
-
 from dataformat.exceptions import DataFormatReadOnlyException
 
 
-def readonly_check(func):
-    attr = 'readonly'
+def readonly_check(arg1=None):
+    """
+    This is decorator method which wraps calling method and checks value of special attribute ('readonly') to verify
+    if this operation can proceed or fail.
 
-    @wraps(func)
-    def inner(instance, *args, **kwargs):
-        if getattr(instance, attr):
-            raise DataFormatReadOnlyException
-        else:
-            func(instance, *args, **kwargs)
+    :param arg1: decorated method or which attribute to check
+    """
+    attr = '_readonly'
 
-    return inner
-
-
-def setattr_readonly_check(cls):
-    attr = 'readonly'
-
-    # TODO think about wraps for class
-    class Wrapped(cls):
-        def __setattr__(self, key, value):
-            if hasattr(self, attr) and getattr(self, attr):
+    def wrap(func):
+        @wraps(func)
+        def inner(instance, *args, **kwargs):
+            if hasattr(instance, attr) and getattr(instance, attr):
                 raise DataFormatReadOnlyException
             else:
-                super().__setattr__(key, value)
+                return func(instance, *args, **kwargs)
 
-    Wrapped.__name__ = cls.__name__
-    return Wrapped
+        return inner
+    if callable(arg1):
+        return wrap(arg1)
+    else:
+        attr = arg1
+        return wrap
+
+
+def readonly_check_methods(*methods):
+    """
+    This is class decorator which iterates through provided method names and decorate each method with "readonly_check"
+    decorator. This decorator does NOT create a new child class, but change methods of original class.
+    :param methods: list of method names which will be decorate
+    """
+    def wrapper(cls):
+        for mtd_name in methods:
+            org_mtd = getattr(cls, mtd_name)
+            setattr(cls, mtd_name, readonly_check(org_mtd))
+        return cls
+    return wrapper

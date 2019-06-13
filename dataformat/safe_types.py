@@ -1,27 +1,24 @@
 from collections import OrderedDict
 
-from dataformat.decorators import setattr_readonly_check, readonly_check
+from dataformat.decorators import readonly_check_methods
 
 
-@setattr_readonly_check
+@readonly_check_methods(
+    'clear', 'fromkeys', 'pop', 'popitem', 'update', '__delattr__', '__delitem__', '__setattr__', '__setitem__',
+)
 class DataFormatOrderedDict(OrderedDict):
 
     def __init__(self, *args, **kwargs):
-        self.readonly = False
+        self._readonly = False
         super().__init__(*args, **kwargs)
 
-    @readonly_check
-    def update(self, __m, **kwargs):
-        super().update(__m, **kwargs)
 
-    @readonly_check
-    def __setitem__(self, key, value):
-        super().__setitem__(key, value)
+@readonly_check_methods(
+    'append', 'clear', 'extend', 'insert', 'pop', 'remove', 'reverse', 'sort', '__iadd__', '__imul__', '__setattr__',
+    '__setitem__',
+)
+class DataFormatList(list):
 
-    @readonly_check
-    def pop(self, k):
-        super().pop(k)
-
-    @readonly_check
-    def popitem(self, last: bool = ...):
-        super().popitem(last)
+    def __init__(self, *args, **kwargs):
+        self._readonly = False
+        super().__init__(*args, **kwargs)

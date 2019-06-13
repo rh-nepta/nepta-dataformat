@@ -4,16 +4,17 @@ import xml.etree.ElementTree as ET
 from xml.dom import minidom
 
 from dataformat.section import Section
-from dataformat.exceptions import DataFormatFileNotFound, DataFormatFileExists
-from dataformat.decorators import readonly_check
+from dataformat.exceptions import DataFormatFileNotFound, DataFormatFileExists, DataFormatNullFile
+from dataformat.decorators import readonly_check_methods
 
 
+@readonly_check_methods('__setattr__', 'save')
 class XMLFile(object):
 
     def __init__(self, path, root_section=None, readonly=False):
         self.path = path
-        self._root = Section('root') if not root_section else root_section
-        self.readonly = readonly
+        self.root = Section('root') if not root_section else root_section
+        self._readonly = readonly
 
     @classmethod
     def open(cls, path, readonly=False):
@@ -31,15 +32,9 @@ class XMLFile(object):
         return cls(path)
 
     @property
-    def root(self):
-        return self._root
+    def readonly(self):
+        return self._readonly
 
-    @root.setter
-    @readonly_check
-    def root(self, value):
-        self._root = value
-
-    @readonly_check
     def save(self):
         self._save()
 
@@ -53,18 +48,14 @@ class XMLFile(object):
             for child_node in root_node:
                 sec.subsections.append(load_sections(child_node))
 
-            if self.readonly:
-                sec.subsections.sections = tuple(sec.subsections.sections)
-            sec.subsections.readonly = self.readonly
+            sec.readonly = self.readonly
             return sec
 
         tree = ET.parse(self.path)
         root = tree.getroot()
-        self._root = load_sections(root)
-        self._root.readonly = self.readonly
+        self.__dict__['root'] = load_sections(root)
         return self
 
-    @readonly_check
     def _save(self):
         def save_sections(sec):
             el = ET.Element(sec.name)
@@ -84,12 +75,13 @@ class XMLFile(object):
         xml_file.close()
 
 
+@readonly_check_methods('save', '__setitem__')
 class MetaXMLFile(object):
 
     @classmethod
     def open(cls, path, readonly=False):
         file = XMLFile.open(path)
-        meta_sec = file.root.get_subsections_by_name('Settings')[0]
+        meta_sec = file.root.subsections.filter('Settings')[0]
         return cls(file, meta_sec, readonly)
 
     @classmethod
@@ -97,7 +89,7 @@ class MetaXMLFile(object):
         file = XMLFile.create(path)
         meta_sec = Section('Settings')
         file.root = Section('BeakerRunResult')
-        file.root.add_subsection(meta_sec)
+        file.root.subsections.append(meta_sec)
         file.save()
         return cls(file, meta_sec)
 
@@ -105,21 +97,19 @@ class MetaXMLFile(object):
         self._xml_file = xml_file
         self._meta_section_ptr = meta_section
         self._val_dict = {}
-        self.readonly = readonly
+        self._readonly = readonly
         for sec in meta_section:
             if 'value' in sec.params:
                 self._val_dict[sec.name] = sec.params['value']
             elif 'type' in sec.params and sec.params['type'] == 'list':
                 self._val_dict[sec.name] = [sec.params['value'] for sec in sec.subsections]
 
-    @readonly_check
     def save(self):
         self._meta_section_ptr.delete_subsections()
         for k, v in self._val_dict.items():
-            self._meta_section_ptr.add_subsection(Section(k, value=v))
+            self._meta_section_ptr.subsections.append(Section(k, value=v))
         self._xml_file.save()
 
-    @readonly_check
     def __setitem__(self, key, value):
         self._val_dict[key] = value
 
@@ -130,5 +120,37 @@ class MetaXMLFile(object):
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        if not self.readonly:
+        if not self._readonly:
             self.save()
+
+
+class NullFile(object):
+    # TODO think about better solution of this
+
+    def __init__(self, path, *args):
+        self.file = path
+
+    def throw(self):
+        raise DataFormatNullFile(f'{self.file} is not opened. Operation is not permitted!!!')
+
+    def __getattr__(self, item):
+        self.throw()
+
+    def __setattr__(self, item, val):
+        if item in ['throw', 'file']:
+            return super().__setattr__(item, val)
+        else:
+            self.throw()
+
+    def __getitem__(self, item):
+        self.throw()
+
+    def __setitem__(self, item, value):
+        self.throw()
+
+    def __len__(self):
+        self.throw()
+
+    def __iter__(self):
+        self.throw()
+
