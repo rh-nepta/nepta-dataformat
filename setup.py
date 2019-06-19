@@ -15,4 +15,5 @@ setup(
     author_email='atomasov@redhat.com',
     url='https://github.com/rh-nepta/nepta-dataformat',
     packages = ['dataformat'],
+    install_requires = ['dataclasses==0.6'],
 )
