@@ -3,9 +3,9 @@ from collections import OrderedDict
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
 
-from dataformat.section import Section
-from dataformat.exceptions import DataFormatFileNotFound, DataFormatFileExists, DataFormatNullFile
-from dataformat.decorators import readonly_check_methods
+from nepta.dataformat.section import Section
+from nepta.dataformat.exceptions import DataFormatFileNotFound, DataFormatFileExists, DataFormatNullFile
+from nepta.dataformat.decorators import readonly_check_methods
 
 
 @readonly_check_methods('__setattr__', 'save')

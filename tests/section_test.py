@@ -2,10 +2,10 @@ import shutil
 import os
 from unittest import TestCase
 
-from dataformat.section import Section, SectionCollection
-from dataformat.xml_file import XMLFile
-from dataformat.exceptions import DataFormatReadOnlyException
-from dataformat.safe_types import DataFormatOrderedDict, DataFormatList
+from nepta.dataformat.section import Section, SectionCollection
+from nepta.dataformat.xml_file import XMLFile
+from nepta.dataformat.exceptions import DataFormatReadOnlyException
+from nepta.dataformat.safe_types import DataFormatOrderedDict, DataFormatList
 
 
 class SectionTest(TestCase):

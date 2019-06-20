@@ -1,6 +1,6 @@
 from collections import OrderedDict
 
-from dataformat.decorators import readonly_check_methods
+from nepta.dataformat.decorators import readonly_check_methods
 
 
 @readonly_check_methods(
