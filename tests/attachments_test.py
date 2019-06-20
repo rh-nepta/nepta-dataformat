@@ -3,9 +3,9 @@ import shutil
 from unittest import TestCase
 from collections import defaultdict
 
-from dataformat.attachments import AttachmentCollection
-from dataformat.exceptions import DataFormatReadOnlyException, DataFormatDuplicateKey, DataFormatBadType
-from dataformat import AttachmentTypes
+from nepta.dataformat.attachments import AttachmentCollection
+from nepta.dataformat.exceptions import DataFormatReadOnlyException, DataFormatDuplicateKey, DataFormatBadType
+from nepta.dataformat import AttachmentTypes
 
 
 class AttachmentCollectionTest(TestCase):

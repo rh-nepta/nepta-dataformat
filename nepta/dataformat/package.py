@@ -2,9 +2,9 @@ import os
 from enum import Flag, auto
 from collections import defaultdict
 
-from dataformat.xml_file import XMLFile, MetaXMLFile, NullFile
-from dataformat.attachments import AttachmentCollection
-from dataformat.decorators import readonly_check_methods
+from nepta.dataformat.xml_file import XMLFile, MetaXMLFile, NullFile
+from nepta.dataformat.attachments import AttachmentCollection
+from nepta.dataformat.decorators import readonly_check_methods
 
 
 class FileFlags(Flag):

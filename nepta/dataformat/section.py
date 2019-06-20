@@ -1,5 +1,5 @@
-from dataformat.decorators import readonly_check_methods
-from dataformat.safe_types import DataFormatOrderedDict, DataFormatList
+from nepta.dataformat.decorators import readonly_check_methods
+from nepta.dataformat.safe_types import DataFormatOrderedDict, DataFormatList
 
 
 @readonly_check_methods('__setattr__', 'delete_subsections')

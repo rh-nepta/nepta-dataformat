@@ -2,10 +2,10 @@ import shutil
 import os
 import operator
 
-from dataformat import DataPackage, FileFlags
-from dataformat.section import Section, SectionCollection
-from dataformat.xml_file import XMLFile, MetaXMLFile
-from dataformat.exceptions import DataFormatFileNotFound, DataFormatReadOnlyException, DataFormatFileExists, \
+from nepta.dataformat import DataPackage, FileFlags
+from nepta.dataformat.section import Section, SectionCollection
+from nepta.dataformat.xml_file import XMLFile, MetaXMLFile
+from nepta.dataformat.exceptions import DataFormatFileNotFound, DataFormatReadOnlyException, DataFormatFileExists, \
     DataFormatNullFile
 from unittest import TestCase
 

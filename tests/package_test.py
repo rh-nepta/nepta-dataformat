@@ -3,11 +3,11 @@ import os
 from unittest import TestCase
 
 
-from dataformat import DataPackage, AttachmentTypes, FileFlags
+from nepta.dataformat import DataPackage, AttachmentTypes, FileFlags
 
-from dataformat.xml_file import XMLFile, MetaXMLFile, NullFile
-from dataformat.section import Section
-from dataformat.exceptions import DataFormatReadOnlyException
+from nepta.dataformat.xml_file import XMLFile, MetaXMLFile, NullFile
+from nepta.dataformat.section import Section
+from nepta.dataformat.exceptions import DataFormatReadOnlyException
 
 
 class BasicPackageTests(TestCase):
