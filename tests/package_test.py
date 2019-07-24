@@ -73,6 +73,7 @@ class BasicPackageTests(TestCase):
         with open(os.path.join(self.OPEN_PATH, attch1.path), 'w') as f:
             f.write('asdfasdf')
         attch2 = p.attachments.new(AttachmentTypes.DIRECTORY, '/var/log/')
+        os.makedirs(os.path.join(self.OPEN_PATH, attch2.path))
 
         p.close()
         del p
@@ -147,6 +148,7 @@ class BasicPackageTests(TestCase):
             with open(os.path.join(self.OPEN_PATH, attch1.path), 'w') as f:
                 f.write('asdfasdf')
             attch2 = p.attachments.new(AttachmentTypes.DIRECTORY, '/var/log/')
+            os.makedirs(os.path.join(self.OPEN_PATH, attch2.path))
 
         del p
 

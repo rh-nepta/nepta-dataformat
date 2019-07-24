@@ -105,10 +105,7 @@ class AttachmentCollection(object):
         if alias:
             self.alias_map[alias] = new_att
 
-        if type == Types.DIRECTORY:
-            os.makedirs(os.path.join(self.path, new_path))
-        else:
-            os.makedirs(os.path.join(self.path, new_dir))
+        os.makedirs(os.path.join(self.path, new_dir))
 
         return new_att
 
