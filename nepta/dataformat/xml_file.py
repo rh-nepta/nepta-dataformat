@@ -75,7 +75,7 @@ class XMLFile(object):
         xml_file.close()
 
 
-@readonly_check_methods('save', '__setitem__')
+@readonly_check_methods('save', '__setitem__', 'update')
 class MetaXMLFile(object):
 
     @classmethod
@@ -109,6 +109,9 @@ class MetaXMLFile(object):
         for k, v in self._val_dict.items():
             self._meta_section_ptr.subsections.append(Section(k, value=v))
         self._xml_file.save()
+
+    def update(self, kw):
+        return self._val_dict.update(kw)
 
     def __setitem__(self, key, value):
         self._val_dict[key] = value

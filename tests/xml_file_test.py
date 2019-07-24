@@ -179,11 +179,23 @@ class MetaXMLFileTest(TestCase):
         m1.save()
 
         m2 = MetaXMLFile.open(self.EXIST)
-        self.assertEqual(m1['Family'], 'RHEL7')
-        self.assertEqual(m1['Area'], area)
-        self.assertEqual(m1['BeakerJobID'], '3483869')
+        self.assertEqual(m2['Family'], 'RHEL7')
+        self.assertEqual(m2['Area'], area)
+        self.assertEqual(m2['BeakerJobID'], '3483869')
         self.assertIsInstance(m1['OtherHostNames'], list)
+
+        m2.update({
+            'Family': 'RHEL5',
+            'secret': 'password',
+        })
+
         m2.save()
+
+        m3 = MetaXMLFile.open(self.EXIST)
+        self.assertEqual(m3['Family'], 'RHEL5')
+        self.assertEqual(m3['Area'], area)
+        self.assertEqual(m3['secret'], 'password')
+        m3.save()
 
     def test_open_with(self):
         area = "51 - UFO landing zone"
