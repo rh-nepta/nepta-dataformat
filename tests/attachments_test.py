@@ -3,9 +3,9 @@ import shutil
 from unittest import TestCase
 from collections import defaultdict
 
-from dataformat.attachments import AttachmentCollection
-from dataformat.exceptions import DataFormatReadOnlyException, DataFormatDuplicateKey, DataFormatBadType
-from dataformat import AttachmentTypes
+from nepta.dataformat.attachments import AttachmentCollection
+from nepta.dataformat.exceptions import DataFormatReadOnlyException, DataFormatDuplicateKey, DataFormatBadType
+from nepta.dataformat import AttachmentTypes
 
 
 class AttachmentCollectionTest(TestCase):
@@ -61,6 +61,7 @@ class AttachmentCollectionTest(TestCase):
         with open(os.path.join(self.NEW, att1.path), 'w') as f:
             f.write('sadljfhsaldjfhsadlkjfh')
         att2 = ac.new(AttachmentTypes.DIRECTORY, '/etc/')
+        os.makedirs(os.path.join(self.NEW, att2.path))
 
         self.assertRaises(DataFormatBadType, ac.new, 'asdf', 'adf')
 

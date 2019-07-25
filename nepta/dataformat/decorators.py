@@ -1,5 +1,5 @@
 from functools import wraps
-from dataformat.exceptions import DataFormatReadOnlyException
+from nepta.dataformat.exceptions import DataFormatReadOnlyException
 
 
 def readonly_check(arg1=None):

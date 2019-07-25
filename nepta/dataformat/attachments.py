@@ -5,10 +5,10 @@ from uuid import uuid4
 from dataclasses import dataclass
 from enum import Enum
 
-from dataformat.xml_file import XMLFile
-from dataformat.section import Section
-from dataformat.decorators import readonly_check_methods
-from dataformat.exceptions import DataFormatDuplicateKey, DataFormatBadType
+from nepta.dataformat.xml_file import XMLFile
+from nepta.dataformat.section import Section
+from nepta.dataformat.decorators import readonly_check_methods
+from nepta.dataformat.exceptions import DataFormatDuplicateKey, DataFormatBadType
 
 
 class Types(Enum):
@@ -105,10 +105,7 @@ class AttachmentCollection(object):
         if alias:
             self.alias_map[alias] = new_att
 
-        if type == Types.DIRECTORY:
-            os.makedirs(os.path.join(self.path, new_path))
-        else:
-            os.makedirs(os.path.join(self.path, new_dir))
+        os.makedirs(os.path.join(self.path, new_dir))
 
         return new_att
 
