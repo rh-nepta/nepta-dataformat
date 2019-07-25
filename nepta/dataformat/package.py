@@ -23,8 +23,8 @@ class DataPackage(object):
         FileFlags.ATTACHMENTS: AttachmentCollection.open,
     })
 
-    @classmethod
-    def is_package(cls, path):
+    @staticmethod
+    def is_package(path):
         checked_files = ['meta.xml', 'store.xml', 'attachments.xml', 'attachments']
         return all([os.path.exists(os.path.join(path, file)) for file in checked_files])
 

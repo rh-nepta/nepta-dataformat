@@ -100,11 +100,9 @@ class DisplayableSection(object):
     def generate_tree(cls, section, parent=None, is_last=False):
         root = cls(section, parent, is_last)
         yield root
-        i = 0
         last_id = len(section.subsections) - 1
-        for subsection in section:
+        for i, subsection in enumerate(section):
             yield from cls.generate_tree(subsection, root, i == last_id)
-            i += 1
 
     def get_parent_prefix(self):
         parent_prefix_list = []
