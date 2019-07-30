@@ -70,10 +70,9 @@ class BasicPackageTests(TestCase):
 
         num_of_attach = len(p.attachments)
         attch1 = p.attachments.new(AttachmentTypes.FILE, 'cat ~/.bashrc')
-        with open(os.path.join(self.OPEN_PATH, attch1.path), 'w') as f:
-            f.write('asdfasdf')
+        attch1.path.write('asdf')
         attch2 = p.attachments.new(AttachmentTypes.DIRECTORY, '/var/log/')
-        os.makedirs(os.path.join(self.OPEN_PATH, attch2.path))
+        os.makedirs(os.path.join(self.OPEN_PATH, str(attch2.path)))
 
         p.close()
         del p
@@ -111,7 +110,7 @@ class BasicPackageTests(TestCase):
 
         self.assertEqual(num_of_attach + 2, len(p1.attachments))
         for attch in p1.attachments:
-            self.assertTrue(os.path.exists(os.path.join(self.OPEN_PATH, attch.path)))
+            self.assertTrue(os.path.exists(os.path.join(self.OPEN_PATH, str(attch.path))))
 
         p1.close()
 
@@ -145,10 +144,9 @@ class BasicPackageTests(TestCase):
 
             num_of_attach = len(p.attachments)
             attch1 = p.attachments.new(AttachmentTypes.FILE, 'cat ~/.bashrc')
-            with open(os.path.join(self.OPEN_PATH, attch1.path), 'w') as f:
-                f.write('asdfasdf')
+            attch1.path.write('asdfasdfa')
             attch2 = p.attachments.new(AttachmentTypes.DIRECTORY, '/var/log/')
-            os.makedirs(os.path.join(self.OPEN_PATH, attch2.path))
+            os.makedirs(os.path.join(self.OPEN_PATH, str(attch2.path)))
 
         del p
 
@@ -183,7 +181,7 @@ class BasicPackageTests(TestCase):
 
             self.assertEqual(num_of_attach + 2, len(p1.attachments))
             for attch in p1.attachments:
-                self.assertTrue(os.path.exists(os.path.join(self.OPEN_PATH, attch.path)))
+                self.assertTrue(os.path.exists(os.path.join(self.OPEN_PATH, str(attch.path))))
 
     def test_is_package(self):
         self.assertFalse(DataPackage.is_package('/etc/'))
