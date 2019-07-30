@@ -122,6 +122,9 @@ class MetaXMLFile(object):
     def __getitem__(self, item):
         return self._val_dict[item]
 
+    def __contains__(self, item):
+        return self._val_dict.__contains__(item)
+
     def __enter__(self):
         return self
 
