@@ -39,7 +39,7 @@ class Path(object):
 class Attachment:
     origin: str
     name: Types  # backward compatibility with libres, this attr specify type
-    path: str
+    path: Path
     uuid: str
     alias: str = None
 
@@ -60,6 +60,7 @@ class AttachmentCollection(object):
         alias_map = {}
 
         for attachment in attachment_metas.root:
+            attachment.params['path'] = Path(path, attachment.params['path'])
             collection.append(Attachment(**attachment.params))
             if 'alias' in attachment.params.keys():
                 alias_map[attachment.params['alias']] = collection[-1]
@@ -116,7 +117,7 @@ class AttachmentCollection(object):
         new_dir = os.path.join(self.ATTCH_DIR, type.value, self.slugify(origin))
         new_path = os.path.join(new_dir, new_uuid)
 
-        new_att = Attachment(origin, type.value, new_path, new_uuid, alias)
+        new_att = Attachment(origin, type.value, Path(self.path, new_path), new_uuid, alias)
 
         self.collection.append(new_att)
         if alias:
@@ -125,5 +126,3 @@ class AttachmentCollection(object):
         os.makedirs(os.path.join(self.path, new_dir))
 
         return new_att
-
-
