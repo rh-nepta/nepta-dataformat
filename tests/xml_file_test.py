@@ -215,6 +215,27 @@ class MetaXMLFileTest(TestCase):
             self.assertRaises(DataFormatReadOnlyException, MetaXMLFile.save, m1)
             self.assertRaises(DataFormatReadOnlyException, MetaXMLFile.__setitem__, m1, 'asdf', 'asdf')
 
+    def test_dict_api(self):
+        m = MetaXMLFile.open(self.NEW)
+
+        a = {
+            "test_str1": "123asdf456",
+            "test_str2": "123aasdfasdfsdf456"
+        }
+
+        for key in a:
+            self.assertFalse(key in m)
+
+        m.update(a)
+
+        for key in a:
+            self.assertTrue(key in m)
+
+        self.assertEqual(m.get("test_str3", "expected.output"), "expected.output")
+        m['test_str3'] = 123
+        self.assertEqual(m.get("test_str3", "expected.output"), 123)
+        self.assertEqual(m.get("test_str4"), None)
+
 
 class NullFileTest(TestCase):
 
