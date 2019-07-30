@@ -19,6 +19,23 @@ class Types(Enum):
 
 
 @dataclass(frozen=True)
+class Path(object):
+    root_dir: str
+    path: str
+
+    def __str__(self):
+        return self.path
+
+    def read(self):
+        with open(os.path.join(self.root_dir, self.path), 'r') as f:
+            return f.read()
+
+    def write(self, content):
+        with open(os.path.join(self.root_dir, self.path), 'w') as f:
+            f.write(content)
+
+
+@dataclass(frozen=True)
 class Attachment:
     origin: str
     name: Types  # backward compatibility with libres, this attr specify type
