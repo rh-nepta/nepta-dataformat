@@ -113,6 +113,9 @@ class MetaXMLFile(object):
     def update(self, kw):
         return self._val_dict.update(kw)
 
+    def get(self, *args, **kwargs):
+        return self._val_dict.get(*args, **kwargs)
+
     def __setitem__(self, key, value):
         self._val_dict[key] = value
 
