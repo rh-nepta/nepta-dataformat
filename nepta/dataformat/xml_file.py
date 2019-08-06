@@ -107,10 +107,7 @@ class MetaXMLFile(object):
         self._val_dict = {}
         self._readonly = readonly
         for sec in meta_section:
-            if 'value' in sec.params:
-                self._val_dict[sec.name] = sec.params['value']
-            elif 'type' in sec.params and sec.params['type'] == 'list':
-                self._val_dict[sec.name] = [sec.params['value'] for sec in sec.subsections]
+            self._val_dict[sec.name] = sec.params['value']
 
     def save(self):
         self._meta_section_ptr.delete_subsections()
