@@ -44,9 +44,12 @@ class XMLFile(object):
         def load_sections(root_node):
             params_list = OrderedDict(root_node.attrib.items())
             sec = Section(root_node.tag, params_list)
-            
+
             for child_node in root_node:
-                sec.subsections.append(load_sections(child_node))
+                if child_node.attrib.get('type', '') == 'list':
+                    sec.subsections.append(Section(child_node.tag, value=[sub_node.attrib['value'] for sub_node in child_node]))
+                else:
+                    sec.subsections.append(load_sections(child_node))
 
             sec.readonly = self.readonly
             return sec
@@ -60,7 +63,12 @@ class XMLFile(object):
         def save_sections(sec):
             el = ET.Element(sec.name)
             for index, val in sec.params.items():
-                el.set(index, str(val))
+                if type(val) == list:
+                    el.set('type', 'list')
+                    for item in val:
+                        el.append(ET.Element('item', value=item))
+                else:
+                    el.set(index, str(val))
 
             for subsec in sec.subsections:
                 el.append(save_sections(subsec))
