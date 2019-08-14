@@ -131,6 +131,7 @@ class MetaXMLFileTest(TestCase):
     )
     TEST_DIR = 'tmp'
     NEW = os.path.join(TEST_DIR, 'meta1.xml')
+    NEW2 = os.path.join(TEST_DIR, 'meta3.xml')
     EXIST = os.path.join(TEST_DIR, 'meta2.xml')
 
     @classmethod
@@ -235,6 +236,27 @@ class MetaXMLFileTest(TestCase):
         m['test_str3'] = 123
         self.assertEqual(m.get("test_str3", "expected.output"), 123)
         self.assertEqual(m.get("test_str4"), None)
+
+    def test_store_list_type(self):
+        m = MetaXMLFile.create(self.NEW2)
+        list1 = [
+            "list_item_1",
+            "list_item_2",
+        ]
+        m['list_1'] = list1
+
+        m.save()
+
+        m_test = MetaXMLFile.open(self.NEW2)
+        self.assertEqual(list1, m_test['list_1'])
+        list2 = ['a'*x for x in range(8)]
+        m_test['my_list_2'] = list2
+
+        m_test.save()
+
+        m2_test = MetaXMLFile.open(self.NEW2)
+        self.assertEqual(list2, m2_test['my_list_2'])
+
 
 
 class NullFileTest(TestCase):
