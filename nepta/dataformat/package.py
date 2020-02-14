@@ -5,6 +5,7 @@ from collections import defaultdict
 from nepta.dataformat.xml_file import XMLFile, MetaXMLFile, NullFile
 from nepta.dataformat.attachments import AttachmentCollection
 from nepta.dataformat.decorators import readonly_check_methods
+from nepta.dataformat.remote_package import RemotePackageCollection
 
 
 class FileFlags(Flag):
@@ -12,7 +13,8 @@ class FileFlags(Flag):
     META = auto()
     STORE = auto()
     ATTACHMENTS = auto()
-    ALL = META | STORE | ATTACHMENTS
+    REMOTE_PACKAGES = auto()
+    ALL = META | STORE | ATTACHMENTS | REMOTE_PACKAGES
 
 
 @readonly_check_methods('__setattr__')
@@ -21,6 +23,7 @@ class DataPackage(object):
         FileFlags.META: MetaXMLFile.open,
         FileFlags.STORE: XMLFile.open,
         FileFlags.ATTACHMENTS: AttachmentCollection.open,
+        FileFlags.REMOTE_PACKAGES: RemotePackageCollection.open,
     })
 
     @staticmethod
@@ -33,7 +36,8 @@ class DataPackage(object):
         meta_file = cls._FILE_CONSTRUCT_MAP[file_opts & FileFlags.META](os.path.join(path, 'meta.xml'), readonly)
         store_file = cls._FILE_CONSTRUCT_MAP[file_opts & FileFlags.STORE](os.path.join(path, 'store.xml'), readonly)
         attach_col = cls._FILE_CONSTRUCT_MAP[file_opts & FileFlags.ATTACHMENTS](path, readonly)
-        return cls(path, meta_file, store_file, attach_col, readonly)
+        rem_pkg_col = cls._FILE_CONSTRUCT_MAP[file_opts & FileFlags.REMOTE_PACKAGES](path, readonly)
+        return cls(path, meta_file, store_file, attach_col, rem_pkg_col, readonly)
 
     @classmethod
     def create(cls, path):
@@ -41,13 +45,15 @@ class DataPackage(object):
         metas = MetaXMLFile.create(os.path.join(path, 'meta.xml'))
         store = XMLFile.create(os.path.join(path, 'store.xml'))
         attachments = AttachmentCollection.create(path)
-        return cls(path, metas, store, attachments)
+        remote_packages = RemotePackageCollection.create(path)
+        return cls(path, metas, store, attachments, remote_packages)
 
-    def __init__(self, path, metas, store, attachments, readonly=False):
+    def __init__(self, path, metas, store, attachments, remote_packages, readonly=False):
         self.path = path
         self.metas = metas
         self.store = store
         self.attachments = attachments
+        self.remote_packages = remote_packages
         self._readonly = readonly
 
     def __enter__(self):
@@ -61,3 +67,4 @@ class DataPackage(object):
             self.metas.save()
             self.store.save()
             self.attachments.save()
+            self.remote_packages.save()

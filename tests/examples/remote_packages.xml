@@ -1,0 +1,6 @@
+<?xml version="1.0" ?>
+  <remote_packages>
+    <remote_package host="obrabec2" path="df_pkg/remote_packages/obrabec2"/>
+    <remote_package host="vales1" path="df_pkg/remote_packages/vales1"/>
+    <remote_package host="vales2" path="df_pkg/remote_packages/vales2"/>
+  </remote_packages>
