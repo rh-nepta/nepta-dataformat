@@ -9,6 +9,7 @@ with open('README.md', 'r') as f:
 setup(
     name='nepta-dataformat',
     version=versioneer.get_version(),
+    cmdclass=versioneer.get_cmdclass(),
     description='Lib providing data scheme of nepta test result.',
     long_description=readme,
     author='Adrian Tomasov',
