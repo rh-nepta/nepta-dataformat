@@ -81,6 +81,9 @@ class AttachmentCollection(object):
 
         for attachment in attachment_metas.root:
             attachment.params['path'] = Path(path, attachment.params['path'])
+            attachment.params['name'] = Types.from_value(attachment.params['name'])
+            if 'compression' in attachment.params.keys():
+                attachment.params['compression'] = Compression.from_value(attachment.params['compression'])
             collection.append(Attachment(**attachment.params))
             if 'alias' in attachment.params.keys():
                 alias_map[attachment.params['alias']] = collection[-1]
