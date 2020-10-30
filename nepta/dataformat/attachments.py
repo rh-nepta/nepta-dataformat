@@ -11,7 +11,16 @@ from nepta.dataformat.decorators import readonly_check_methods
 from nepta.dataformat.exceptions import DataFormatDuplicateKey, DataFormatBadType
 
 
-class Types(Enum):
+class _EnumFinder(Enum):
+
+    @classmethod
+    def from_value(cls, value):
+        for _, member in cls.__members__.items():
+            if str(member) == value:
+                return member
+
+
+class Types(_EnumFinder):
     FILE = 'File'
     DIRECTORY = 'Directory'
     COMMAND = 'Command'
