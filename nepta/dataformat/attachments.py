@@ -69,6 +69,13 @@ class Attachment:
     alias: str = None
     compression: Compression = Compression.NONE
 
+    @property
+    def archive_path(self):
+        if self.compression is not Compression.NONE:
+            return self.path.full_path + f'.tar.{self.compression.value}'
+        else:
+            return self.path.full_path
+
 
 @readonly_check_methods('new', 'save', '__setattr__')
 class AttachmentCollection(object):
@@ -134,18 +141,18 @@ class AttachmentCollection(object):
     def _compression(self):
         for att in self.collection:
             if att.compression is not Compression.NONE:
-                path = att.path.full_path
+                old_path = att.path.full_path
+                new_path = att.archive_path
 
                 # compress file/directory
-                with TarFile.open(f'{path}.tar.{att.compression.value}',
-                                  f'w:{att.compression.value}') as tf:
-                    tf.add(path, os.path.basename(path))
+                with TarFile.open(new_path, f'w:{att.compression.value}') as tf:
+                    tf.add(old_path, os.path.basename(old_path))
 
                 # delete the source
-                if os.path.isdir(path):
-                    shutil.rmtree(att.path.full_path)
+                if os.path.isdir(old_path):
+                    shutil.rmtree(old_path)
                 else:
-                    os.remove(path)
+                    os.remove(old_path)
 
     def save(self):
         self._save_xml()
