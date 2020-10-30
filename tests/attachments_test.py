@@ -47,8 +47,10 @@ class AttachmentCollectionTest(TestCase):
         for att in ac:
             counter[att.name] += 1
 
-        self.assertEqual(counter['Command'], 3)
-        self.assertEqual(counter['Directory'], 1)
+        print(counter)
+
+        self.assertEqual(counter[AttachmentTypes.COMMAND], 3)
+        self.assertEqual(counter[AttachmentTypes.DIRECTORY], 1)
 
     def test_create(self):
         ac = AttachmentCollection.create(self.NEW)
