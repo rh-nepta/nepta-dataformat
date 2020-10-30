@@ -127,17 +127,17 @@ class AttachmentCollection(object):
         value = re.sub(r'[^\w\s-]', '-', name).strip().lower()
         return re.sub(r'[-\s]+', '--', value)
 
-    def new(self, type, origin, alias=None):
+    def new(self, att_type, origin, alias=None, compression=Compression.NONE):
         if alias in self.alias_map:
             raise DataFormatDuplicateKey
-        if type not in Types:
+        if att_type not in Types:
             raise DataFormatBadType
 
         new_uuid = str(uuid4())
-        new_dir = os.path.join(self.ATTCH_DIR, type.value, self.slugify(origin))
+        new_dir = os.path.join(self.ATTCH_DIR, att_type.value, self.slugify(origin))
         new_path = os.path.join(new_dir, new_uuid)
 
-        new_att = Attachment(origin, type.value, Path(self.path, new_path), new_uuid, alias)
+        new_att = Attachment(origin, att_type, Path(self.path, new_path), new_uuid, alias, compression)
 
         self.collection.append(new_att)
         if alias:
