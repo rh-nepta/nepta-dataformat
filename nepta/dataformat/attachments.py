@@ -16,8 +16,11 @@ class _EnumFinder(Enum):
     @classmethod
     def from_value(cls, value):
         for _, member in cls.__members__.items():
-            if str(member) == value:
+            if member.value == value:
                 return member
+
+    def __str__(self):
+        return self.value
 
 
 class Types(_EnumFinder):
