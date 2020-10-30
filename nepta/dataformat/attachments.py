@@ -30,6 +30,13 @@ class Types(_EnumFinder):
     URL = 'Url'
 
 
+class Compression(_EnumFinder):
+    NONE = 'None'
+    ZIP = 'zip'
+    BZIP2 = 'bzip2'
+    XZ = 'xz'
+
+
 @dataclass(frozen=True)
 class Path(object):
     root_dir: str
@@ -54,6 +61,7 @@ class Attachment:
     path: Path
     uuid: str
     alias: str = None
+    compression: Compression = Compression.NONE
 
 
 @readonly_check_methods('new', 'save', '__setattr__')
