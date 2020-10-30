@@ -1,5 +1,7 @@
 import os
 import re
+import shutil
+from tarfile import TarFile
 from uuid import uuid4
 
 from dataclasses import dataclass
@@ -32,8 +34,8 @@ class Types(_EnumFinder):
 
 class Compression(_EnumFinder):
     NONE = 'None'
-    ZIP = 'zip'
-    BZIP2 = 'bzip2'
+    ZIP = 'gz'
+    BZIP2 = 'bz2'
     XZ = 'xz'
 
 
@@ -44,6 +46,10 @@ class Path(object):
 
     def __str__(self):
         return self.path
+
+    @property
+    def full_path(self):
+        return os.path.join(self.root_dir, self.path)
 
     def read(self):
         with open(os.path.join(self.root_dir, self.path), 'r') as f:
@@ -116,7 +122,7 @@ class AttachmentCollection(object):
     def __getitem__(self, item):
         return self.alias_map[item]
 
-    def save(self):
+    def _save_xml(self):
         self.att_meta.root = Section(self.ROOT_NAME)
         for attachment in self.collection:
             attachments_params = dict(attachment.__dict__)
@@ -124,6 +130,26 @@ class AttachmentCollection(object):
                 attachments_params.pop('alias')
             self.att_meta.root.subsections.append(Section(self.ELEM_NAME, attachments_params))
         self.att_meta.save()
+
+    def _compression(self):
+        for att in self.collection:
+            if att.compression is not Compression.NONE:
+                path = att.path.full_path
+
+                # compress file/directory
+                with TarFile.open(f'{path}.tar.{att.compression.value}',
+                                  f'w:{att.compression.value}') as tf:
+                    tf.add(path, os.path.basename(path))
+
+                # delete the source
+                if os.path.isdir(path):
+                    shutil.rmtree(att.path.full_path)
+                else:
+                    os.remove(path)
+
+    def save(self):
+        self._save_xml()
+        self._compression()
 
     @staticmethod
     def slugify(name):
