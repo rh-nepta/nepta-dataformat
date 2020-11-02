@@ -8,7 +8,8 @@ unittests:
                 - docker
         stage: test
         script: 
-          - pip install pytest
-          - pytest
+          - pip install pipenv
+          - pipenv install --dev
+          - pipenv run pytest
 
 
