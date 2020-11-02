@@ -1,10 +1,7 @@
-image: fedora
+image: python:3.6
 
 stages:
         - test
-
-before_script:
-        - dnf -y install python3 python3-pytest 
 
 unittests:
         tags:
