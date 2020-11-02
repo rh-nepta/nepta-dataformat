@@ -3,10 +3,12 @@ image: python:3.6
 stages:
         - test
 
+
 unittests:
         tags:
                 - docker
         stage: test
-        script: pytest-3
+        script: 
+          - pytest
 
 
