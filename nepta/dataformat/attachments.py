@@ -1,6 +1,7 @@
 import os
 import re
 import shutil
+import logging
 from tarfile import TarFile
 from uuid import uuid4
 
@@ -11,6 +12,8 @@ from nepta.dataformat.xml_file import XMLFile
 from nepta.dataformat.section import Section
 from nepta.dataformat.decorators import readonly_check_methods
 from nepta.dataformat.exceptions import DataFormatDuplicateKey, DataFormatBadType
+
+logger = logging.getLogger(__name__)
 
 
 class _EnumFinder(Enum):
@@ -144,6 +147,8 @@ class AttachmentCollection(object):
                 old_path = att.path.full_path
                 new_path = att.archive_path
 
+                logger.info(f'Compressing attachment: {att}')
+
                 # compress file/directory
                 with TarFile.open(new_path, f'w:{att.compression.value}') as tf:
                     tf.add(old_path, os.path.basename(old_path))
@@ -155,6 +160,7 @@ class AttachmentCollection(object):
                     os.remove(old_path)
 
     def save(self):
+        logger.info('Saving attachment collection')
         self._save_xml()
         self._compression()
 
