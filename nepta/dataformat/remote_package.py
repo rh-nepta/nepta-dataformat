@@ -55,7 +55,7 @@ class RemotePackageCollection(object):
         return self.collection[-1]
 
     def archive(self):
-        with tarfile.open(os.path.join(self.path, f'{self.RMPKG_DIR}.tar.xz', 'w:xz')) as tf:
+        with tarfile.open(os.path.join(self.path, f'{self.RMPKG_DIR}.tar.xz'), 'w:xz') as tf:
             for rem_pkg in self.collection:
                 tf.add(rem_pkg.path)
         shutil.rmtree(os.path.join(self.path, self.RMPKG_DIR))
