@@ -24,7 +24,7 @@ class AttachmentCollectionTest(TestCase):
         os.mkdir(self.NEW)
         os.mkdir(self.EXIST)
         shutil.copy(
-            os.path.join(self.EXAMPLE_DIR, 'attch.xml'),
+            os.path.join(self.EXAMPLE_DIR, 'attachments.xml'),
             os.path.join(self.EXIST, 'attachments.xml')
         )
         shutil.copytree(
