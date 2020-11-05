@@ -27,7 +27,9 @@ class RemotePackageCollection(object):
         collection = []
         for rem_pkg in meta.root:
             collection.append(RemotePackage(**rem_pkg.params))
-        return cls(path, meta, collection, readonly)
+        collection = cls(path, meta, collection, readonly)
+        collection.unarchive()
+        return collection
 
     @classmethod
     def create(cls, path):
@@ -49,16 +51,29 @@ class RemotePackageCollection(object):
         return len(self.collection)
 
     def new(self, hostname):
-        path = os.path.join(self.path, self.RMPKG_DIR, hostname)
-        os.mkdir(path)
+        path = os.path.join(self.RMPKG_DIR, hostname)
+        os.mkdir(os.path.join(self.path, path))
         self.collection.append(RemotePackage(hostname, path))
         return self.collection[-1]
 
     def archive(self):
+        orig_dir = os.getcwd()
         with tarfile.open(os.path.join(self.path, f'{self.RMPKG_DIR}.tar.xz'), 'w:xz') as tf:
+            os.chdir(self.path)
             for rem_pkg in self.collection:
                 tf.add(rem_pkg.path)
+            os.chdir(orig_dir)
         shutil.rmtree(os.path.join(self.path, self.RMPKG_DIR))
+
+    def unarchive(self):
+        orig_dir = os.getcwd()
+        tar_path = os.path.join(self.path, f'{self.RMPKG_DIR}.tar.xz')
+        with tarfile.open(tar_path, 'r:xz') as tf:
+            os.chdir(self.path)
+            for mem in tf.getmembers():
+                tf.extract(mem)
+            os.chdir(orig_dir)
+        os.remove(tar_path)
 
     def save(self):
         self.meta.root = Section(self.ROOT_NAME)
