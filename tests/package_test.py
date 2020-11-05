@@ -21,19 +21,7 @@ class BasicPackageTests(TestCase):
 
     def setUp(self):
         os.mkdir(self.TEST_DIR)
-        os.mkdir(self.OPEN_PATH)
-        shutil.copytree(os.path.join(self.EXAMPLE_DIR, 'attachments'),
-                        os.path.join(self.OPEN_PATH, 'attachments'))
-        shutil.copytree(os.path.join(self.EXAMPLE_DIR, 'remote_packages'),
-                        os.path.join(self.OPEN_PATH, 'remote_packages'))
-        shutil.copy(os.path.join(self.EXAMPLE_DIR, 'meta.xml'),
-                    os.path.join(self.OPEN_PATH, 'meta.xml'))
-        shutil.copy(os.path.join(self.EXAMPLE_DIR, 'menu.xml'),
-                    os.path.join(self.OPEN_PATH, 'store.xml'))
-        shutil.copy(os.path.join(self.EXAMPLE_DIR, 'attch.xml'),
-                    os.path.join(self.OPEN_PATH, 'attachments.xml'))
-        shutil.copy(os.path.join(self.EXAMPLE_DIR, 'remote_packages.xml'),
-                    os.path.join(self.OPEN_PATH, 'remote_packages.xml'))
+        shutil.copytree(self.EXAMPLE_DIR, self.OPEN_PATH)
 
     def tearDown(self):
         shutil.rmtree(self.TEST_DIR)
