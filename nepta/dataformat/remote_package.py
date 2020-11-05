@@ -1,5 +1,7 @@
 import os
 from dataclasses import dataclass
+import tarfile
+import shutil
 
 from nepta.dataformat.xml_file import XMLFile, Section
 from nepta.dataformat.decorators import readonly_check_methods
@@ -52,9 +54,16 @@ class RemotePackageCollection(object):
         self.collection.append(RemotePackage(hostname, path))
         return self.collection[-1]
 
+    def archive(self):
+        with tarfile.open(os.path.join(self.path, f'{self.RMPKG_DIR}.tar.xz', 'w:xz')) as tf:
+            for rem_pkg in self.collection:
+                tf.add(rem_pkg.path)
+        shutil.rmtree(os.path.join(self.path, self.RMPKG_DIR))
+
     def save(self):
         self.meta.root = Section(self.ROOT_NAME)
         for rem_pkg in self.collection:
             attachments_params = dict(rem_pkg.__dict__)
             self.meta.root.subsections.append(Section(self.ELEM_NAME, attachments_params))
         self.meta.save()
+        self.archive()

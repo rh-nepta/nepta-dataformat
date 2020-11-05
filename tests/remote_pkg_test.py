@@ -27,6 +27,11 @@ class RemotePackageTest(TestCase):
             self.assertTrue(os.path.exists(os.path.join(
                 pkg.path, RemotePackageCollection.RMPKG_DIR, host)))
 
+        self.assertTrue(os.path.exists(os.path.join(pkg.path, pkg.RMPKG_DIR)))
+        pkg.save()
+        self.assertFalse(os.path.exists(os.path.join(pkg.path, pkg.RMPKG_DIR)),
+                         'Saved packages should contain only archived remote packages.')
+
     def test_open(self):
         hosts = ['obrabec2', 'vales1', 'vales2']
         pkg = RemotePackageCollection.create(self.PATH)
