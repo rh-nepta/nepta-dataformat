@@ -70,7 +70,7 @@ class SectionCollectionTest(TestCase):
     @classmethod
     def setUp(cls):
         shutil.copy(
-            os.path.join(cls.EXAMPLE_DIR, 'menu.xml'),
+            os.path.join(cls.EXAMPLE_DIR, 'store.xml'),
             cls.EXIST
         )
 

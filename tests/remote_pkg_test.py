@@ -40,10 +40,12 @@ class RemotePackageTest(TestCase):
 
         pkg.save()
         for rem_pkg in pkg:
-            self.assertFalse(os.path.exists(rem_pkg.path), 'Remote packages are not archived correctly')
+            self.assertFalse(os.path.exists(os.path.join(pkg.path, rem_pkg.path)),
+                             'Remote packages are not archived correctly')
 
         pkg2 = RemotePackageCollection.open(self.PATH)
         self.assertEqual(len(hosts), len(pkg2))
         for rem_pkg in pkg2:
             self.assertIn(rem_pkg.host, hosts, 'Remote package meta: host is missing')
-            self.assertTrue(os.path.exists(rem_pkg.path), 'Remote packages are not extracted correctly')
+            self.assertTrue(os.path.exists(os.path.join(pkg2.path, rem_pkg.path)),
+                            'Remote packages are not extracted correctly')
