@@ -144,10 +144,10 @@ class AttachmentCollection(object):
     def _compression(self):
         for att in self.collection:
             if att.compression is not Compression.NONE:
+                logger.info(f'Compressing attachment: {att}')
+                
                 old_path = att.path.full_path
                 new_path = att.archive_path
-
-                logger.info(f'Compressing attachment: {att}')
 
                 # compress file/directory
                 with TarFile.open(new_path, f'w:{att.compression.value}') as tf:
