@@ -64,8 +64,8 @@ class RemotePackageCollection(object):
         orig_dir = os.getcwd()
         with tarfile.open(os.path.join(self.path, f'{self.RMPKG_DIR}.tar.xz'), 'w:xz') as tf:
             os.chdir(self.path)
-            for rem_pkg in self.collection:
-                tf.add(rem_pkg.path)
+            for item in os.listdir(self.RMPKG_DIR):
+                tf.add(os.path.join(self.RMPKG_DIR, item))
             os.chdir(orig_dir)
         shutil.rmtree(os.path.join(self.path, self.RMPKG_DIR))
 
