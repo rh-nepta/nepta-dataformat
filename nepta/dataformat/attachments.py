@@ -143,7 +143,7 @@ class AttachmentCollection(object):
 
     def _compression(self):
         for att in self.collection:
-            if att.compression is not Compression.NONE:
+            if att.compression is not Compression.NONE and os.path.exists(att.path.full_path):
                 logger.info(f'Compressing attachment: {att}')
                 
                 old_path = att.path.full_path
