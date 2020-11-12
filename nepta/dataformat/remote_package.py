@@ -6,6 +6,7 @@ import logging
 
 from nepta.dataformat.xml_file import XMLFile, Section
 from nepta.dataformat.decorators import readonly_check_methods
+from nepta.dataformat.attachments import Path
 
 logger = logging.getLogger(__name__)
 
@@ -13,7 +14,7 @@ logger = logging.getLogger(__name__)
 @dataclass(frozen=True)
 class RemotePackage(object):
     host: str
-    path: str
+    path: Path
 
 
 # TODO: make generic collection maybe
@@ -29,6 +30,7 @@ class RemotePackageCollection(object):
         meta = XMLFile.open(os.path.join(path, cls.META_FILE))
         collection = []
         for rem_pkg in meta.root:
+            rem_pkg.params['path'] = Path(path, rem_pkg.params['path'])
             collection.append(RemotePackage(**rem_pkg.params))
         collection = cls(path, meta, collection, readonly)
         collection.unarchive()
@@ -56,7 +58,7 @@ class RemotePackageCollection(object):
     def new(self, hostname):
         path = os.path.join(self.RMPKG_DIR, hostname)
         os.mkdir(os.path.join(self.path, path))
-        self.collection.append(RemotePackage(hostname, path))
+        self.collection.append(RemotePackage(hostname, Path(self.path, path)))
         return self.collection[-1]
 
     def archive(self):
