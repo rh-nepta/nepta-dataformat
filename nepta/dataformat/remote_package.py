@@ -72,6 +72,7 @@ class RemotePackageCollection(object):
     def unarchive(self):
         logger.info('Decompressing remote packages archive')
         orig_dir = os.getcwd()
+        os.mkdir(os.path.join(self.path, self.RMPKG_DIR))
         tar_path = os.path.join(self.path, f'{self.RMPKG_DIR}.tar.xz')
         with tarfile.open(tar_path, 'r:xz') as tf:
             os.chdir(self.path)
