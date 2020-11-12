@@ -5,7 +5,7 @@ from collections import defaultdict
 
 from nepta.dataformat.attachments import AttachmentCollection
 from nepta.dataformat.exceptions import DataFormatReadOnlyException, DataFormatDuplicateKey, DataFormatBadType
-from nepta.dataformat import AttachmentTypes
+from nepta.dataformat import AttachmentTypes, Compression
 
 
 class AttachmentCollectionTest(TestCase):
@@ -19,9 +19,9 @@ class AttachmentCollectionTest(TestCase):
     @classmethod
     def setUpClass(cls):
         os.mkdir(cls.TEST_DIR)
-        os.mkdir(cls.NEW)
 
     def setUp(self):
+        os.mkdir(self.NEW)
         os.mkdir(self.EXIST)
         shutil.copy(
             os.path.join(self.EXAMPLE_DIR, 'attachments.xml'),
@@ -34,6 +34,7 @@ class AttachmentCollectionTest(TestCase):
 
     def tearDown(self):
         shutil.rmtree(self.EXIST)
+        shutil.rmtree(self.NEW)
 
     @classmethod
     def tearDownClass(cls):
@@ -47,8 +48,10 @@ class AttachmentCollectionTest(TestCase):
         for att in ac:
             counter[att.name] += 1
 
-        self.assertEqual(counter['Command'], 3)
-        self.assertEqual(counter['Directory'], 1)
+        print(counter)
+
+        self.assertEqual(counter[AttachmentTypes.COMMAND], 3)
+        self.assertEqual(counter[AttachmentTypes.DIRECTORY], 1)
 
     def test_create(self):
         ac = AttachmentCollection.create(self.NEW)
@@ -107,3 +110,16 @@ class AttachmentCollectionTest(TestCase):
 
         self.assertRaises(DataFormatDuplicateKey, ac1.new, AttachmentTypes.FILE, 'asdf', 'net')
 
+    def test_compression(self):
+        ac = AttachmentCollection.create(self.NEW)
+
+        att1 = ac.new(AttachmentTypes.DIRECTORY, 'folder', compression=Compression.BZIP2)
+        shutil.copytree(self.EXIST, att1.path.full_path)
+
+        att2 = ac.new(AttachmentTypes.COMMAND, 'dmesg', compression=Compression.XZ)
+        att2.path.write(os.popen('dmesg').read())
+
+        ac.save()
+
+        self.assertTrue(os.path.exists(att1.path.full_path + '.tar.bz2'))
+        self.assertTrue(os.path.exists(att2.path.full_path + '.tar.xz'))
