@@ -2,15 +2,19 @@ import os
 from dataclasses import dataclass
 import tarfile
 import shutil
+import logging
 
 from nepta.dataformat.xml_file import XMLFile, Section
 from nepta.dataformat.decorators import readonly_check_methods
+from nepta.dataformat.attachments import Path
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
 class RemotePackage(object):
     host: str
-    path: str
+    path: Path
 
 
 # TODO: make generic collection maybe
@@ -26,6 +30,7 @@ class RemotePackageCollection(object):
         meta = XMLFile.open(os.path.join(path, cls.META_FILE))
         collection = []
         for rem_pkg in meta.root:
+            rem_pkg.params['path'] = Path(path, rem_pkg.params['path'])
             collection.append(RemotePackage(**rem_pkg.params))
         collection = cls(path, meta, collection, readonly)
         collection.unarchive()
@@ -53,20 +58,23 @@ class RemotePackageCollection(object):
     def new(self, hostname):
         path = os.path.join(self.RMPKG_DIR, hostname)
         os.mkdir(os.path.join(self.path, path))
-        self.collection.append(RemotePackage(hostname, path))
+        self.collection.append(RemotePackage(hostname, Path(self.path, path)))
         return self.collection[-1]
 
     def archive(self):
+        logger.info('Compressing remote packages directory')
         orig_dir = os.getcwd()
         with tarfile.open(os.path.join(self.path, f'{self.RMPKG_DIR}.tar.xz'), 'w:xz') as tf:
             os.chdir(self.path)
-            for rem_pkg in self.collection:
-                tf.add(rem_pkg.path)
+            for item in os.listdir(self.RMPKG_DIR):
+                tf.add(os.path.join(self.RMPKG_DIR, item))
             os.chdir(orig_dir)
         shutil.rmtree(os.path.join(self.path, self.RMPKG_DIR))
 
     def unarchive(self):
+        logger.info('Decompressing remote packages archive')
         orig_dir = os.getcwd()
+        os.mkdir(os.path.join(self.path, self.RMPKG_DIR))
         tar_path = os.path.join(self.path, f'{self.RMPKG_DIR}.tar.xz')
         with tarfile.open(tar_path, 'r:xz') as tf:
             os.chdir(self.path)
@@ -76,6 +84,7 @@ class RemotePackageCollection(object):
         os.remove(tar_path)
 
     def save(self):
+        logger.debug('Saving remote packages')
         self.meta.root = Section(self.ROOT_NAME)
         for rem_pkg in self.collection:
             attachments_params = dict(rem_pkg.__dict__)
