@@ -2,9 +2,12 @@ import os
 from dataclasses import dataclass
 import tarfile
 import shutil
+import logging
 
 from nepta.dataformat.xml_file import XMLFile, Section
 from nepta.dataformat.decorators import readonly_check_methods
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -57,6 +60,7 @@ class RemotePackageCollection(object):
         return self.collection[-1]
 
     def archive(self):
+        logger.info('Compressing remote packages directory')
         orig_dir = os.getcwd()
         with tarfile.open(os.path.join(self.path, f'{self.RMPKG_DIR}.tar.xz'), 'w:xz') as tf:
             os.chdir(self.path)
@@ -66,6 +70,7 @@ class RemotePackageCollection(object):
         shutil.rmtree(os.path.join(self.path, self.RMPKG_DIR))
 
     def unarchive(self):
+        logger.info('Decompressing remote packages archive')
         orig_dir = os.getcwd()
         tar_path = os.path.join(self.path, f'{self.RMPKG_DIR}.tar.xz')
         with tarfile.open(tar_path, 'r:xz') as tf:
@@ -76,6 +81,7 @@ class RemotePackageCollection(object):
         os.remove(tar_path)
 
     def save(self):
+        logger.debug('Saving remote packages')
         self.meta.root = Section(self.ROOT_NAME)
         for rem_pkg in self.collection:
             attachments_params = dict(rem_pkg.__dict__)
