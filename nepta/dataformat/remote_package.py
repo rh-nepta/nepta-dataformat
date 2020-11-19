@@ -3,6 +3,7 @@ from dataclasses import dataclass
 import tarfile
 import shutil
 import logging
+import traceback
 
 from nepta.dataformat.xml_file import XMLFile, Section
 from nepta.dataformat.decorators import readonly_check_methods
@@ -33,7 +34,12 @@ class RemotePackageCollection(object):
             rem_pkg.params['path'] = Path(path, rem_pkg.params['path'])
             collection.append(RemotePackage(**rem_pkg.params))
         collection = cls(path, meta, collection, readonly)
-        collection.unarchive()
+        try:
+            collection.unarchive()
+        except Exception as e:
+            logger.error('Cannot un-archive remote packages. Ignoring exception for compatibility.')
+            logger.error(e)
+            traceback.print_exc()
         return collection
 
     @classmethod
