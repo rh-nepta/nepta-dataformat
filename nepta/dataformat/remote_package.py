@@ -34,12 +34,13 @@ class RemotePackageCollection(object):
             rem_pkg.params['path'] = Path(path, rem_pkg.params['path'])
             collection.append(RemotePackage(**rem_pkg.params))
         collection = cls(path, meta, collection, readonly)
-        try:
-            collection.unarchive()
-        except Exception as e:
-            logger.error('Cannot un-archive remote packages. Ignoring exception for compatibility.')
-            logger.error(e)
-            traceback.print_exc()
+        if not readonly:
+            try:
+                collection.unarchive()
+            except Exception as e:
+                logger.error('Cannot un-archive remote packages. Ignoring exception for compatibility.')
+                logger.error(e)
+                traceback.print_exc()
         return collection
 
     @classmethod
