@@ -21,8 +21,9 @@ build:
   needs:
     - unittests
   only:
-    - tags
     - /^v[0-9]*\.[0-9]*\.[0-9]*$/
+  except:
+    - branches
   script:
     - python setup.py sdist
 
