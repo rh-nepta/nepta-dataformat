@@ -1,15 +1,32 @@
 image: python:3.6
 
 stages:
-        - test
+  - test
+  - build
 
 unittests:
-        tags:
-                - docker
-        stage: test
-        script: 
-          - pip install pipenv
-          - pipenv install --dev
-          - pipenv run pytest
+  tags:
+    - docker
+  stage: test
+  script:
+    - pip install pipenv
+    - pipenv install --dev
+    - pipenv run pytest
 
 
+build:
+  tags:
+    - docker
+  stage: build
+  needs:
+    - unittests
+  only:
+    - tags
+    - /^v[0-9]*\.[0-9]*\.[0-9]*$/
+  script:
+    - python setup.py sdist
+
+  artifacts:
+    paths:
+      - dist
+    expire_in: 7 days
