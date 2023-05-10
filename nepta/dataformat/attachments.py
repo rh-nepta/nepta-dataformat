@@ -172,7 +172,7 @@ class AttachmentCollection(object):
     def new(self, att_type, origin, alias=None, compression=Compression.NONE):
         if alias in self.alias_map:
             raise DataFormatDuplicateKey
-        if att_type not in Types:
+        if not isinstance(att_type, Types):
             raise DataFormatBadType
 
         new_uuid = str(uuid4())
