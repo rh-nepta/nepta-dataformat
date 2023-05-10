@@ -1,15 +1,38 @@
 image: python
 
 stages:
-        - test
+  - test
+  - build
 
 unittests:
-        tags:
-                - docker
-        stage: test
-        script: 
-          - pip install pipenv
-          - pipenv install --dev
-          - pipenv run pytest
+  tags:
+    - docker
+  stage: test
+  script:
+    - pip install pipenv
+    - pipenv install --dev
+    - pipenv run pytest
 
 
+build:
+  tags:
+    - docker
+  stage: build
+  needs:
+    - unittests
+  only:
+    - /^v[0-9]*\.[0-9]*\.?[0-9]*$/
+  except:
+    - branches
+  script:
+    - pip install pulp-cli
+    - pulp config create --username $PULP_USER --password $PULP_PASS --base-url $PULP_URL --api-root /pulp/ --no-verify-ssl
+    - python setup.py sdist
+    - export PKG=$(ls dist)
+    - cd dist && pulp python content upload --relative-path $PKG --file $PKG
+    - pulp python repository content add --repository nepta --filename $PKG
+
+  artifacts:
+    paths:
+      - dist
+    expire_in: 7 days

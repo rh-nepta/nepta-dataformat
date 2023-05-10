@@ -50,10 +50,10 @@ class DataPackage(object):
 
     def __init__(self, path, metas, store, attachments, remote_packages, readonly=False):
         self.path = path
-        self.metas = metas
-        self.store = store
-        self.attachments = attachments
-        self.remote_packages = remote_packages
+        self.metas: MetaXMLFile = metas
+        self.store: XMLFile = store
+        self.attachments: AttachmentCollection = attachments
+        self.remote_packages: RemotePackageCollection = remote_packages
         self._readonly = readonly
 
     def __enter__(self):
