@@ -5,9 +5,6 @@ verify_ssl = true
 
 [dev-packages]
 pytest = "*"
+ipdb = "*"
 
 [packages]
-dataclasses = "==0.6"
-
-[requires]
-python_version = "3.6"

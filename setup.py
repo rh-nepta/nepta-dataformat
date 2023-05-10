@@ -16,6 +16,6 @@ setup(
     author_email='atomasov@redhat.com',
     url='https://github.com/rh-nepta/nepta-dataformat',
     packages=['nepta.dataformat'],
-    install_requires=['dataclasses==0.6'],
+    install_requires=['dataclasses; python_version <= "3.6"'],
     namespace_packages=['nepta'],
 )
