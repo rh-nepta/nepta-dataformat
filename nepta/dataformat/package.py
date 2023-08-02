@@ -28,7 +28,7 @@ class DataPackage(object):
 
     @staticmethod
     def is_package(path):
-        checked_files = ['meta.xml', 'store.xml', 'attachments.xml', 'attachments']
+        checked_files = ['meta.xml', 'store.xml', 'attachments.xml']
         return all([os.path.exists(os.path.join(path, file)) for file in checked_files])
 
     @classmethod
