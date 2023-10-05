@@ -47,7 +47,11 @@ class XMLFile(object):
 
             for child_node in root_node:
                 if child_node.attrib.get('type', '') == 'list':
-                    sec.subsections.append(Section(child_node.tag, value=[sub_node.attrib['value'] for sub_node in child_node]))
+                    sec.subsections.append(Section(
+                        child_node.tag, 
+                        value=[sub_node.attrib['value'] for sub_node in child_node],
+                        params={k: v for k, v in child_node.attrib.items() if k != 'type'}
+                    ))
                 else:
                     sec.subsections.append(load_sections(child_node))
 
