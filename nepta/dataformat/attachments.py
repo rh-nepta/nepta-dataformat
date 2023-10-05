@@ -167,7 +167,11 @@ class AttachmentCollection(object):
     @staticmethod
     def slugify(name):
         value = re.sub(r'[^\w\s-]', '-', name).strip().lower()
-        return re.sub(r'[-\s]+', '--', value)
+        value = re.sub(r'[-\s]+', '--', value)
+        if len(value) > 50:
+            value = value[:50]
+            logger.warning(f'File name too long!!! Shortening to {value}')
+        return value
 
     def new(self, att_type, origin, alias=None, compression=Compression.NONE):
         if alias in self.alias_map:
