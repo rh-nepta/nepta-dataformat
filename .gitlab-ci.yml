@@ -8,11 +8,7 @@ unittests:
   tags:
     - docker
   stage: test
-  script:
-    - pip install pipenv
-    - pipenv install --dev
-    - pipenv run pytest
-
+  script: make test
 
 build:
   tags:
