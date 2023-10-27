@@ -3,7 +3,3 @@ from nepta.dataformat.attachments import Types as AttachmentTypes
 from nepta.dataformat.attachments import Compression
 from nepta.dataformat.package import FileFlags
 from nepta.dataformat.section import Section
-
-from ._version import get_versions
-__version__ = get_versions()['version']
-del get_versions
