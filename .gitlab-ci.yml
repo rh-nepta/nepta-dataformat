@@ -9,6 +9,10 @@ stages:
   - style
   - publish
 
+default:
+  before_script:
+    - pip install hatch
+
 unittests:
   tags:
     - docker
