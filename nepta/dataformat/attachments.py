@@ -1,23 +1,21 @@
+import logging
 import os
 import re
 import shutil
-import logging
+from dataclasses import dataclass
+from enum import Enum
 from tarfile import TarFile
 from uuid import uuid4
 
-from dataclasses import dataclass
-from enum import Enum
-
-from nepta.dataformat.xml_file import XMLFile
-from nepta.dataformat.section import Section
 from nepta.dataformat.decorators import readonly_check_methods
-from nepta.dataformat.exceptions import DataFormatDuplicateKey, DataFormatBadType
+from nepta.dataformat.exceptions import DataFormatBadTypeError, DataFormatDuplicateKeyError
+from nepta.dataformat.section import Section
+from nepta.dataformat.xml_file import XMLFile
 
 logger = logging.getLogger(__name__)
 
 
 class _EnumFinder(Enum):
-
     @classmethod
     def from_value(cls, value):
         for _, member in cls.__members__.items():
@@ -43,7 +41,7 @@ class Compression(_EnumFinder):
 
 
 @dataclass(frozen=True)
-class Path(object):
+class Path:
     root_dir: str
     path: str
 
@@ -55,7 +53,7 @@ class Path(object):
         return os.path.join(self.root_dir, self.path)
 
     def read(self):
-        with open(os.path.join(self.root_dir, self.path), 'r') as f:
+        with open(os.path.join(self.root_dir, self.path)) as f:
             return f.read()
 
     def write(self, content):
@@ -81,13 +79,14 @@ class Attachment:
 
 
 @readonly_check_methods('new', 'save', '__setattr__')
-class AttachmentCollection(object):
+class AttachmentCollection:
     META_FILE = 'attachments.xml'
     ATTCH_DIR = 'attachments'
     ELEM_NAME = 'attachment'
     ROOT_NAME = 'attachments'
 
     SPACE = '\n\t'
+    FILE_MAX_LEN = 50
 
     @classmethod
     def open(cls, path, readonly=False):
@@ -145,7 +144,7 @@ class AttachmentCollection(object):
         for att in self.collection:
             if att.compression is not Compression.NONE and os.path.exists(att.path.full_path):
                 logger.info(f'Compressing attachment: {att}')
-                
+
                 old_path = att.path.full_path
                 new_path = att.archive_path
 
@@ -164,20 +163,20 @@ class AttachmentCollection(object):
         self._save_xml()
         self._compression()
 
-    @staticmethod
-    def slugify(name):
+    @classmethod
+    def slugify(cls, name):
         value = re.sub(r'[^\w\s-]', '-', name).strip().lower()
         value = re.sub(r'[-\s]+', '--', value)
-        if len(value) > 50:
-            value = value[:50]
+        if len(value) > cls.FILE_MAX_LEN:
+            value = value[: cls.FILE_MAX_LEN]
             logger.warning(f'File name too long!!! Shortening to {value}')
         return value
 
     def new(self, att_type, origin, alias=None, compression=Compression.NONE):
         if alias in self.alias_map:
-            raise DataFormatDuplicateKey
+            raise DataFormatDuplicateKeyError
         if not isinstance(att_type, Types):
-            raise DataFormatBadType
+            raise DataFormatBadTypeError
 
         new_uuid = str(uuid4())
         new_dir = os.path.join(self.ATTCH_DIR, att_type.value, self.slugify(origin))

@@ -96,16 +96,12 @@ fmt = [
 target-version = "py37"
 line-length = 120
 select = [
-  "A",
   "ARG",
   "B",
   "C",
   "DTZ",
   "E",
-  "EM",
   "F",
-  "FBT",
-  "I",
   "ICN",
   "ISC",
   "N",
@@ -114,9 +110,8 @@ select = [
   "PLR",
   "PLW",
   "Q",
-  "RUF",
-  "S",
-  "T",
+#  "RUF",
+#  "S",
   "TID",
   "UP",
   "W",

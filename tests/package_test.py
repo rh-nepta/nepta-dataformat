@@ -1,19 +1,15 @@
-import shutil
 import os
+import shutil
 from unittest import TestCase
 
-
-from nepta.dataformat import DataPackage, AttachmentTypes, FileFlags
-
-from nepta.dataformat.xml_file import XMLFile, MetaXMLFile, NullFile
+from nepta.dataformat import AttachmentTypes, DataPackage, FileFlags
+from nepta.dataformat.exceptions import DataFormatReadOnlyExceptionError
 from nepta.dataformat.section import Section
-from nepta.dataformat.exceptions import DataFormatReadOnlyException
+from nepta.dataformat.xml_file import MetaXMLFile, NullFile, XMLFile
 
 
 class BasicPackageTests(TestCase):
-    EXAMPLE_DIR = os.path.join(
-        os.path.dirname(os.path.realpath(__file__)), 'examples'
-    )
+    EXAMPLE_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'examples')
     TEST_DIR = 'tmp'
     CREATE_PATH = os.path.join(TEST_DIR, 'p1')
     CREATE_PATH2 = os.path.join(TEST_DIR, 'p3')
@@ -196,9 +192,9 @@ class BasicPackageTests(TestCase):
 
     def test_ro(self):
         p = DataPackage.open(self.OPEN_PATH, readonly=True)
-        self.assertRaises(DataFormatReadOnlyException, p.__setattr__, 'store', None)
+        self.assertRaises(DataFormatReadOnlyExceptionError, p.__setattr__, 'store', None)
         # test if readonly is propagated
-        self.assertRaises(DataFormatReadOnlyException, p.metas.__setitem__, p.metas, 'Family', 'No')
-        self.assertRaises(DataFormatReadOnlyException, p.store.save)
-        self.assertRaises(DataFormatReadOnlyException, p.attachments.new, AttachmentTypes.DIRECTORY, 'cat .')
+        self.assertRaises(DataFormatReadOnlyExceptionError, p.metas.__setitem__, p.metas, 'Family', 'No')
+        self.assertRaises(DataFormatReadOnlyExceptionError, p.store.save)
+        self.assertRaises(DataFormatReadOnlyExceptionError, p.attachments.new, AttachmentTypes.DIRECTORY, 'cat .')
         p.close()

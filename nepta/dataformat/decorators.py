@@ -1,5 +1,6 @@
 from functools import wraps
-from nepta.dataformat.exceptions import DataFormatReadOnlyException
+
+from nepta.dataformat.exceptions import DataFormatReadOnlyExceptionError
 
 
 def readonly_check(arg1=None):
@@ -15,11 +16,12 @@ def readonly_check(arg1=None):
         @wraps(func)
         def inner(instance, *args, **kwargs):
             if hasattr(instance, attr) and getattr(instance, attr):
-                raise DataFormatReadOnlyException
+                raise DataFormatReadOnlyExceptionError
             else:
                 return func(instance, *args, **kwargs)
 
         return inner
+
     if callable(arg1):
         return wrap(arg1)
     else:
@@ -33,9 +35,11 @@ def readonly_check_methods(*methods):
     decorator. This decorator does NOT create a new child class, but change methods of original class.
     :param methods: list of method names which will be decorate
     """
+
     def wrapper(cls):
         for mtd_name in methods:
             org_mtd = getattr(cls, mtd_name)
             setattr(cls, mtd_name, readonly_check(org_mtd))
         return cls
+
     return wrapper

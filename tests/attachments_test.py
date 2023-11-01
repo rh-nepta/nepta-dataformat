@@ -1,17 +1,19 @@
 import os
 import shutil
-from unittest import TestCase
 from collections import defaultdict
+from unittest import TestCase
 
-from nepta.dataformat.attachments import AttachmentCollection
-from nepta.dataformat.exceptions import DataFormatReadOnlyException, DataFormatDuplicateKey, DataFormatBadType
 from nepta.dataformat import AttachmentTypes, Compression
+from nepta.dataformat.attachments import AttachmentCollection
+from nepta.dataformat.exceptions import (
+    DataFormatBadTypeError,
+    DataFormatDuplicateKeyError,
+    DataFormatReadOnlyExceptionError,
+)
 
 
 class AttachmentCollectionTest(TestCase):
-    EXAMPLE_DIR = os.path.join(
-        os.path.dirname(os.path.realpath(__file__)), 'examples'
-    )
+    EXAMPLE_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'examples')
     TEST_DIR = 'tmp'
     NEW = os.path.join(TEST_DIR, 'ac1')
     EXIST = os.path.join(TEST_DIR, 'ac2')
@@ -23,14 +25,8 @@ class AttachmentCollectionTest(TestCase):
     def setUp(self):
         os.mkdir(self.NEW)
         os.mkdir(self.EXIST)
-        shutil.copy(
-            os.path.join(self.EXAMPLE_DIR, 'attachments.xml'),
-            os.path.join(self.EXIST, 'attachments.xml')
-        )
-        shutil.copytree(
-            os.path.join(self.EXAMPLE_DIR, 'attachments'),
-            os.path.join(self.EXIST, 'attachments')
-        )
+        shutil.copy(os.path.join(self.EXAMPLE_DIR, 'attachments.xml'), os.path.join(self.EXIST, 'attachments.xml'))
+        shutil.copytree(os.path.join(self.EXAMPLE_DIR, 'attachments'), os.path.join(self.EXIST, 'attachments'))
 
     def tearDown(self):
         shutil.rmtree(self.EXIST)
@@ -65,7 +61,7 @@ class AttachmentCollectionTest(TestCase):
         att2 = ac.new(AttachmentTypes.DIRECTORY, '/etc/')
         os.makedirs(os.path.join(self.NEW, str(att2.path)))
 
-        self.assertRaises(DataFormatBadType, ac.new, 'asdf', 'adf')
+        self.assertRaises(DataFormatBadTypeError, ac.new, 'asdf', 'adf')
 
         self.assertTrue(os.path.exists(os.path.join(self.NEW, str(att1.path))))
         self.assertTrue(os.path.exists(os.path.join(self.NEW, str(att2.path))))
@@ -86,9 +82,10 @@ class AttachmentCollectionTest(TestCase):
     def test_readonly(self):
         ac = AttachmentCollection.open(self.EXIST, readonly=True)
         self.assertRaises(
-            DataFormatReadOnlyException, AttachmentCollection.new, ac, AttachmentTypes.DIRECTORY, '/')
-        self.assertRaises(DataFormatReadOnlyException, AttachmentCollection.save, ac)
-        self.assertRaises(DataFormatReadOnlyException, setattr, ac, 'path', 'asdf')
+            DataFormatReadOnlyExceptionError, AttachmentCollection.new, ac, AttachmentTypes.DIRECTORY, '/'
+        )
+        self.assertRaises(DataFormatReadOnlyExceptionError, AttachmentCollection.save, ac)
+        self.assertRaises(DataFormatReadOnlyExceptionError, setattr, ac, 'path', 'asdf')
 
         for attch in ac:
             self.assertRaises(Exception, setattr, attch, 'name', 'asdf')
@@ -108,7 +105,7 @@ class AttachmentCollectionTest(TestCase):
         self.assertEqual(att2, ac1['net'])
         self.assertEqual(att3, ac1['cert'])
 
-        self.assertRaises(DataFormatDuplicateKey, ac1.new, AttachmentTypes.FILE, 'asdf', 'net')
+        self.assertRaises(DataFormatDuplicateKeyError, ac1.new, AttachmentTypes.FILE, 'asdf', 'net')
 
     def test_compression(self):
         ac = AttachmentCollection.create(self.NEW)
