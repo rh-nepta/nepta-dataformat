@@ -1,5 +1,8 @@
 all:
 
+fmt:
+	hatch run lint:fmt
+
 test:
 	hatch run test
 

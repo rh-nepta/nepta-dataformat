@@ -6,10 +6,18 @@ include:
 
 stages:
   - test
+  - style
   - publish
 
 unittests:
   tags:
     - docker
   stage: test
-  script: make test
+  script: hatch run test
+
+code-style:
+  tags:
+    - docker
+  stage: style
+  script: hatch run lint:style
+    
