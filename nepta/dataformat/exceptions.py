@@ -1,26 +1,26 @@
-class BaseDataFormatException(Exception):
+class BaseDataFormatError(Exception):
     pass
 
 
-class DataFormatFileNotFound(BaseDataFormatException):
+class DataFormatFileNotFoundError(BaseDataFormatError):
     pass
 
 
-class DataFormatFileExists(BaseDataFormatException):
+class DataFormatFileExistsError(BaseDataFormatError):
     pass
 
 
-class DataFormatReadOnlyException(BaseDataFormatException):
+class DataFormatReadOnlyExceptionError(BaseDataFormatError):
     pass
 
 
-class DataFormatNullFile(BaseDataFormatException):
+class DataFormatNullFileError(BaseDataFormatError):
     pass
 
 
-class DataFormatDuplicateKey(BaseDataFormatException):
+class DataFormatDuplicateKeyError(BaseDataFormatError):
     pass
 
 
-class DataFormatBadType(BaseDataFormatException):
+class DataFormatBadTypeError(BaseDataFormatError):
     pass

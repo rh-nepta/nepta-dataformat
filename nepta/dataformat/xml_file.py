@@ -1,16 +1,15 @@
 import os
-from collections import OrderedDict
 import xml.etree.ElementTree as ET
+from collections import OrderedDict
 from xml.dom import minidom
 
-from nepta.dataformat.section import Section
-from nepta.dataformat.exceptions import DataFormatFileNotFound, DataFormatFileExists, DataFormatNullFile
 from nepta.dataformat.decorators import readonly_check_methods
+from nepta.dataformat.exceptions import DataFormatFileExistsError, DataFormatFileNotFoundError, DataFormatNullFileError
+from nepta.dataformat.section import Section
 
 
 @readonly_check_methods('__setattr__', 'save')
-class XMLFile(object):
-
+class XMLFile:
     def __init__(self, path, root_section=None, readonly=False):
         self.path = path
         self.root = Section('root') if not root_section else root_section
@@ -19,14 +18,14 @@ class XMLFile(object):
     @classmethod
     def open(cls, path, readonly=False):
         if not os.path.exists(path) and not os.path.isfile(path):
-            raise DataFormatFileNotFound('File %s does not exists' % path)
+            raise DataFormatFileNotFoundError('File %s does not exists' % path)
 
         return cls(path, None, readonly=readonly)._load()
 
     @classmethod
     def create(cls, path):
         if os.path.exists(path):
-            raise DataFormatFileExists('File %s already exists' % path)
+            raise DataFormatFileExistsError('File %s already exists' % path)
 
         open(path, 'w').close()
         return cls(path)
@@ -47,11 +46,13 @@ class XMLFile(object):
 
             for child_node in root_node:
                 if child_node.attrib.get('type', '') == 'list':
-                    sec.subsections.append(Section(
-                        child_node.tag, 
-                        value=[sub_node.attrib['value'] for sub_node in child_node],
-                        params={k: v for k, v in child_node.attrib.items() if k != 'type'}
-                    ))
+                    sec.subsections.append(
+                        Section(
+                            child_node.tag,
+                            value=[sub_node.attrib['value'] for sub_node in child_node],
+                            params={k: v for k, v in child_node.attrib.items() if k != 'type'},
+                        )
+                    )
                 else:
                     sec.subsections.append(load_sections(child_node))
 
@@ -67,7 +68,7 @@ class XMLFile(object):
         def save_sections(sec):
             el = ET.Element(sec.name)
             for index, val in sec.params.items():
-                if type(val) == list:
+                if isinstance(val, list):
                     el.set('type', 'list')
                     for item in val:
                         el.append(ET.Element('item', value=item))
@@ -88,8 +89,7 @@ class XMLFile(object):
 
 
 @readonly_check_methods('save', '__setitem__', 'update')
-class MetaXMLFile(object):
-
+class MetaXMLFile:
     @classmethod
     def open(cls, path, readonly=False):
         file = XMLFile.open(path)
@@ -126,8 +126,7 @@ class MetaXMLFile(object):
         return self._val_dict.get(*args, **kwargs)
 
     def __iter__(self):
-        for k, v in self._val_dict.items():
-            yield k, v
+        yield from self._val_dict.items()
 
     def __setitem__(self, key, value):
         self._val_dict[key] = value
@@ -146,14 +145,14 @@ class MetaXMLFile(object):
             self.save()
 
 
-class NullFile(object):
+class NullFile:
     # TODO think about better solution of this
 
-    def __init__(self, path, *args):
+    def __init__(self, path, *args):  # noqa: ARG002
         self.file = path
 
     def throw(self):
-        raise DataFormatNullFile(f'{self.file} is not opened. Operation is not permitted!!!')
+        raise DataFormatNullFileError(f'{self.file} is not opened. Operation is not permitted!!!')
 
     def __getattr__(self, item):
         self.throw()
@@ -175,4 +174,3 @@ class NullFile(object):
 
     def __iter__(self):
         self.throw()
-

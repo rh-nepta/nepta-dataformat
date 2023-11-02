@@ -1,26 +1,26 @@
-import os
-from dataclasses import dataclass
-import tarfile
-import shutil
 import logging
+import os
+import shutil
+import tarfile
 import traceback
+from dataclasses import dataclass
 
-from nepta.dataformat.xml_file import XMLFile, Section
-from nepta.dataformat.decorators import readonly_check_methods
 from nepta.dataformat.attachments import Path
+from nepta.dataformat.decorators import readonly_check_methods
+from nepta.dataformat.xml_file import Section, XMLFile
 
 logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
-class RemotePackage(object):
+class RemotePackage:
     host: str
     path: Path
 
 
 # TODO: make generic collection maybe
 @readonly_check_methods('new', 'save', '__setattr__')
-class RemotePackageCollection(object):
+class RemotePackageCollection:
     META_FILE = 'remote_packages.xml'
     RMPKG_DIR = 'remote_packages'
     ELEM_NAME = 'remote_package'

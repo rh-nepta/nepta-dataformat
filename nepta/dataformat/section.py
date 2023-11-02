@@ -1,9 +1,9 @@
 from nepta.dataformat.decorators import readonly_check_methods
-from nepta.dataformat.safe_types import DataFormatOrderedDict, DataFormatList
+from nepta.dataformat.safe_types import DataFormatList, DataFormatOrderedDict
 
 
 @readonly_check_methods('__setattr__', 'delete_subsections')
-class Section(object):
+class Section:
     def __init__(self, name, params=None, **kwargs):
         self.name = name
         self._readonly = False
@@ -18,7 +18,7 @@ class Section(object):
         return iter(self.subsections)
 
     def __repr__(self):
-        return 'Section %s (%s)' % (self.name, self.params or '')
+        return f'Section {self.name} ({self.params or ""})'
 
     @property
     def readonly(self):
@@ -34,12 +34,11 @@ class Section(object):
         self.subsections = SectionCollection()
 
     def str_tree(self):
-        return "\n".join(str(x) for x in DisplayableSection.generate_tree(self))
+        return '\n'.join(str(x) for x in DisplayableSection.generate_tree(self))
 
 
 @readonly_check_methods('append', '__setattr__')
-class SectionCollection(object):
-
+class SectionCollection:
     def __init__(self):
         self.sections = DataFormatList()
         self._readonly = False
@@ -81,10 +80,11 @@ class SectionCollection(object):
         self.sections.append(s)
 
 
-class DisplayableSection(object):
+class DisplayableSection:
     """
     Inspired by : https://stackoverflow.com/questions/9727673/list-directory-tree-structure-in-python
     """
+
     child_prefix_middle = '├──'
     child_prefix_last = '└──'
     parent_prefix_middle = '|   '
@@ -110,11 +110,10 @@ class DisplayableSection(object):
         while parent and parent.parent is not None:
             parent_prefix_list.append(self.parent_prefix_last if parent.is_last else self.parent_prefix_middle)
             parent = parent.parent
-        return "".join(reversed(parent_prefix_list))
+        return ''.join(reversed(parent_prefix_list))
 
     def __str__(self):
         if self.parent is None:
             return str(self.section)
-        bundle_name = "{!s} {!s}".format(self.child_prefix_last if self.is_last else self.child_prefix_middle,
-                                         self.section)
+        bundle_name = f'{self.child_prefix_last if self.is_last else self.child_prefix_middle!s} {self.section!s}'
         return self.parent_prefix + bundle_name

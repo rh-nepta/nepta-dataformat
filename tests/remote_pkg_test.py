@@ -1,6 +1,6 @@
-from unittest import TestCase
 import os
 import shutil
+from unittest import TestCase
 
 from nepta.dataformat.remote_package import RemotePackageCollection
 
@@ -24,13 +24,14 @@ class RemotePackageTest(TestCase):
             pkg.new(host)
 
         for host in hosts:
-            self.assertTrue(os.path.exists(os.path.join(
-                pkg.path, RemotePackageCollection.RMPKG_DIR, host)))
+            self.assertTrue(os.path.exists(os.path.join(pkg.path, RemotePackageCollection.RMPKG_DIR, host)))
 
         self.assertTrue(os.path.exists(os.path.join(pkg.path, pkg.RMPKG_DIR)))
         pkg.save()
-        self.assertFalse(os.path.exists(os.path.join(pkg.path, pkg.RMPKG_DIR)),
-                         'Saved packages should contain only archived remote packages.')
+        self.assertFalse(
+            os.path.exists(os.path.join(pkg.path, pkg.RMPKG_DIR)),
+            'Saved packages should contain only archived remote packages.',
+        )
 
     def test_open(self):
         hosts = ['obrabec2', 'vales1', 'vales2']

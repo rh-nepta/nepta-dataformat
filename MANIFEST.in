@@ -1,5 +1,0 @@
-include versioneer.py
-include dataformat/_version.py
-
-include README.md
-include LICENSE
