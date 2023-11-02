@@ -17,7 +17,7 @@ unittests:
   tags:
     - docker
   stage: test
-  script: hatch run test
+  script: hatch run all:test
 
 code-style:
   tags:
