@@ -18,6 +18,12 @@ unittests:
     - docker
   stage: test
   script: hatch run all:test
+  artifacts:
+    when: always
+    expire_in: 1 week
+    reports:
+      junit: report*.xml
+
 
 code-style:
   tags:

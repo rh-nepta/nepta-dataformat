@@ -51,9 +51,13 @@ dependencies = [
 [[tool.hatch.envs.all.matrix]]
 python = ["3.7", "3.8", "3.9", "3.10", "3.11"]
 
-[tool.hatch.envs.default.scripts]
+[tool.hatch.envs.all.scripts]
 # Install local package -> namespace import issue
 test = "pip install . && pytest --junit-xml=report-$(python --version | cut -f 2 -d ' ').xml"
+
+[tool.hatch.envs.default.scripts]
+# Install local package -> namespace import issue
+test = "pip install . && pytest"
 
 [tool.mypy]
 ignore_missing_imports = true
