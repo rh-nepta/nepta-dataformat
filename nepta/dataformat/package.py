@@ -1,11 +1,11 @@
 import os
-from enum import Flag, auto
 from collections import defaultdict
+from enum import Flag, auto
 
-from nepta.dataformat.xml_file import XMLFile, MetaXMLFile, NullFile
 from nepta.dataformat.attachments import AttachmentCollection
 from nepta.dataformat.decorators import readonly_check_methods
 from nepta.dataformat.remote_package import RemotePackageCollection
+from nepta.dataformat.xml_file import MetaXMLFile, NullFile, XMLFile
 
 
 class FileFlags(Flag):
@@ -18,18 +18,21 @@ class FileFlags(Flag):
 
 
 @readonly_check_methods('__setattr__')
-class DataPackage(object):
-    _FILE_CONSTRUCT_MAP = defaultdict(lambda: NullFile, {
-        FileFlags.META: MetaXMLFile.open,
-        FileFlags.STORE: XMLFile.open,
-        FileFlags.ATTACHMENTS: AttachmentCollection.open,
-        FileFlags.REMOTE_PACKAGES: RemotePackageCollection.open,
-    })
+class DataPackage:
+    _FILE_CONSTRUCT_MAP = defaultdict(
+        lambda: NullFile,
+        {
+            FileFlags.META: MetaXMLFile.open,
+            FileFlags.STORE: XMLFile.open,
+            FileFlags.ATTACHMENTS: AttachmentCollection.open,
+            FileFlags.REMOTE_PACKAGES: RemotePackageCollection.open,
+        },
+    )
 
     @staticmethod
     def is_package(path):
         checked_files = ['meta.xml', 'store.xml', 'attachments.xml']
-        return all([os.path.exists(os.path.join(path, file)) for file in checked_files])
+        return all(os.path.exists(os.path.join(path, file)) for file in checked_files)
 
     @classmethod
     def open(cls, path, file_opts=FileFlags.ALL, readonly=False):

@@ -1,17 +1,15 @@
-import shutil
 import os
+import shutil
 from unittest import TestCase
 
+from nepta.dataformat.exceptions import DataFormatReadOnlyExceptionError
+from nepta.dataformat.safe_types import DataFormatList, DataFormatOrderedDict
 from nepta.dataformat.section import Section, SectionCollection
 from nepta.dataformat.xml_file import XMLFile
-from nepta.dataformat.exceptions import DataFormatReadOnlyException
-from nepta.dataformat.safe_types import DataFormatOrderedDict, DataFormatList
 
 
 class SectionTest(TestCase):
-    EXAMPLE_DIR = os.path.join(
-        os.path.dirname(os.path.realpath(__file__)), 'examples'
-    )
+    EXAMPLE_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'examples')
     TEST_DIR = 'tmp'
     EXIST = os.path.join(TEST_DIR, 's2.xml')
 
@@ -21,10 +19,7 @@ class SectionTest(TestCase):
 
     @classmethod
     def setUp(cls):
-        shutil.copy(
-            os.path.join(cls.EXAMPLE_DIR, 'meta.xml'),
-            cls.EXIST
-        )
+        shutil.copy(os.path.join(cls.EXAMPLE_DIR, 'meta.xml'), cls.EXIST)
 
     @classmethod
     def tearDownClass(cls):
@@ -38,17 +33,19 @@ class SectionTest(TestCase):
         self.assertEqual(root.subsections.readonly, True)
 
         # test Section
-        self.assertRaises(DataFormatReadOnlyException, Section.delete_subsections, root)
-        self.assertRaises(DataFormatReadOnlyException, Section.__setattr__, root, 'name', 'asdf')
-        self.assertRaises(DataFormatReadOnlyException, Section.__setattr__, root, 'params', dict())
-        self.assertRaises(DataFormatReadOnlyException, DataFormatOrderedDict.__setitem__, root.params, 'key', 'value')
-        self.assertRaises(DataFormatReadOnlyException, DataFormatOrderedDict.update, root.params, 'key', 'value')
-        self.assertRaises(DataFormatReadOnlyException, DataFormatOrderedDict.pop, root.params, 'key')
+        self.assertRaises(DataFormatReadOnlyExceptionError, Section.delete_subsections, root)
+        self.assertRaises(DataFormatReadOnlyExceptionError, Section.__setattr__, root, 'name', 'asdf')
+        self.assertRaises(DataFormatReadOnlyExceptionError, Section.__setattr__, root, 'params', {})
+        self.assertRaises(
+            DataFormatReadOnlyExceptionError, DataFormatOrderedDict.__setitem__, root.params, 'key', 'value'
+        )
+        self.assertRaises(DataFormatReadOnlyExceptionError, DataFormatOrderedDict.update, root.params, 'key', 'value')
+        self.assertRaises(DataFormatReadOnlyExceptionError, DataFormatOrderedDict.pop, root.params, 'key')
 
         subsec = root.subsections[0]
-        self.assertRaises(DataFormatReadOnlyException, Section.delete_subsections, subsec)
-        self.assertRaises(DataFormatReadOnlyException, Section.__setattr__, subsec, 'name', 'asdf')
-        self.assertRaises(DataFormatReadOnlyException, Section.__setattr__, subsec, 'params', dict())
+        self.assertRaises(DataFormatReadOnlyExceptionError, Section.delete_subsections, subsec)
+        self.assertRaises(DataFormatReadOnlyExceptionError, Section.__setattr__, subsec, 'name', 'asdf')
+        self.assertRaises(DataFormatReadOnlyExceptionError, Section.__setattr__, subsec, 'params', {})
 
     def test_section_tree(self):
         xml1 = XMLFile.open(self.EXIST, readonly=True)
@@ -57,9 +54,7 @@ class SectionTest(TestCase):
 
 
 class SectionCollectionTest(TestCase):
-    EXAMPLE_DIR = os.path.join(
-        os.path.dirname(os.path.realpath(__file__)), 'examples'
-    )
+    EXAMPLE_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'examples')
     TEST_DIR = 'tmp'
     EXIST = os.path.join(TEST_DIR, 's2.xml')
 
@@ -69,10 +64,7 @@ class SectionCollectionTest(TestCase):
 
     @classmethod
     def setUp(cls):
-        shutil.copy(
-            os.path.join(cls.EXAMPLE_DIR, 'store.xml'),
-            cls.EXIST
-        )
+        shutil.copy(os.path.join(cls.EXAMPLE_DIR, 'store.xml'), cls.EXIST)
 
     @classmethod
     def tearDownClass(cls):
@@ -82,7 +74,7 @@ class SectionCollectionTest(TestCase):
         xml1 = XMLFile.open(self.EXIST, readonly=True)
         root_subs = xml1.root.subsections
 
-        self.assertRaises(DataFormatReadOnlyException, SectionCollection.append, root_subs, Section('asdf'))
-        self.assertRaises(DataFormatReadOnlyException, SectionCollection.__setattr__, root_subs, 'sections', [])
-        self.assertRaises(DataFormatReadOnlyException, DataFormatList.append, root_subs.sections, Section('adsf'))
-        self.assertRaises(DataFormatReadOnlyException, DataFormatList.pop, root_subs.sections, Section('adsf'))
+        self.assertRaises(DataFormatReadOnlyExceptionError, SectionCollection.append, root_subs, Section('asdf'))
+        self.assertRaises(DataFormatReadOnlyExceptionError, SectionCollection.__setattr__, root_subs, 'sections', [])
+        self.assertRaises(DataFormatReadOnlyExceptionError, DataFormatList.append, root_subs.sections, Section('adsf'))
+        self.assertRaises(DataFormatReadOnlyExceptionError, DataFormatList.pop, root_subs.sections, Section('adsf'))

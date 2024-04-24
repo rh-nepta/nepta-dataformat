@@ -1,38 +1,33 @@
 image: python:3.11
 
+include: 
+  - project: kernel-performance/perfqe-gitlab-ci-templates
+    file: pypi/nexus.yml
+
 stages:
   - test
-  - build
+  - style
+  - publish
+
+default:
+  before_script:
+    - pip install hatch
 
 unittests:
   tags:
     - docker
   stage: test
-  script:
-    - pip install pipenv
-    - pipenv install --dev
-    - pipenv run pytest
+  script: hatch run all:test
+  artifacts:
+    when: always
+    expire_in: 1 week
+    reports:
+      junit: report*.xml
 
 
-build:
+code-style:
   tags:
     - docker
-  stage: build
-  needs:
-    - unittests
-  only:
-    - /^v[0-9]*\.[0-9]*\.?[0-9]*$/
-  except:
-    - branches
-  script:
-    - pip install pulp-cli
-    - pulp config create --username $PULP_USER --password $PULP_PASS --base-url $PULP_URL --api-root /pulp/ --no-verify-ssl
-    - python setup.py sdist
-    - export PKG=$(ls dist)
-    - cd dist && pulp python content upload --relative-path $PKG --file $PKG
-    - pulp python repository content add --repository nepta --filename $PKG
-
-  artifacts:
-    paths:
-      - dist
-    expire_in: 7 days
+  stage: style
+  script: hatch run lint:style
+    
