@@ -4,9 +4,13 @@ include:
   - project: kernel-performance/perfqe-gitlab-ci-templates
     file: pypi/nexus.yml
 
+  - project: kernel-performance/perfqe-gitlab-ci-templates
+    file: llm/pr-agent.yml
+
 stages:
   - test
   - style
+  - review
   - publish
 
 default:
